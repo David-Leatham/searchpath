@@ -66,7 +66,7 @@ function Middle() {
           resizeObserver.observe(middleDivRef.current);
         }
       };
-    }, []);
+    }, [boardSize, resizeBoard]);
   }
 
   return (
