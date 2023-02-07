@@ -1,25 +1,68 @@
 import React, { useState, useEffect, useRef } from "react";
+import styles from '@/styles/Home.module.css';
+// import global_styles from '@/styles/globals.css'
+import { useBoardStore } from "./store/boardStore";
+import { generateKruskal, Block } from "@/lib/kruskal";
+// import { shallow } from 'zustand/shallow'
 
-import styles from '@/styles/Home.module.css'
 
 export default function Middle() {
-  const [boardSize, setBoardSize] = useState([0, 0]);
-  // const middleDivRef = useRef(null);
+  const setBoardSize = useBoardStore((state)=>{return (size: Array<number>) => {state.setHeight(size[0]); state.setWidth(size[1])}})
+  const boardSize: Array<number> = useBoardStore<Array<number>>((state)=>[state.board.height, state.board.width])
+
+  let lastBoardSize = [0, 0];
+
   const [resizeBoard, setResizeBoard] = useState<null | HTMLElement>(null);
+
+  function handleEntry(entry: ResizeObserverEntry): void {
+    let contentWidth  = Math.round(entry.contentRect.width);
+    let contentHeight = Math.round(entry.contentRect.height);
+
+    let boxCount = getBoxCount(contentWidth, contentHeight);
+    
+    if (lastBoardSize[0] != boxCount[0] || lastBoardSize[1] != boxCount[1]) {
+      lastBoardSize = boxCount
+      setBoardSize(boxCount);
+    }
+  }
+
 
   const resizeObserver = new ResizeObserver((entries) => {
 
     for (const entry of entries) {
       if (entry.contentRect) {
-        setBoardSize(getBoxCount(Math.round(entry.contentRect.width), entry.contentRect.height));
+        handleEntry(entry)
       }
     }
   });
 
   useEffect(() => {
-    if (resizeBoard) {
-      resizeBoard.style.gridTemplateRows = 'repeat(' + boardSize[1] + ', 2fr)'
-    }
+    // if (currBoardSize[0] != boardSize[0] || currBoardSize[1] != boardSize[1]) {
+      console.log('change')
+      // setCurrBoardSize(boardSize)
+      if (resizeBoard) {
+        // This is only updated when the board size actually changes.
+        resizeBoard.style.gridTemplateRows = 'repeat(' + boardSize[1] + ', 2fr)'
+        let boardElements = generateKruskal(boardSize[0], boardSize[1])
+        
+        for (let i=0; i < boardSize[0] * boardSize[1]; i++) {
+          let elem = document.getElementsByClassName(styles.middle)[0].children.item(i) as HTMLElement
+          if (boardElements[i] == Block.Wall) {
+            elem.style.background = 'black';
+            elem.style.transform = 'rotate(90deg)';
+          } else if (boardElements[i] == Block.Path) {
+            elem.style.background = 'rgb(220, 220, 220)';
+            elem.style.transform = 'rotate(0deg)';
+          } else if (boardElements[i] == Block.Start) {
+            elem.style.background = 'rgb(0, 51, 102)';
+            elem.style.transform = 'rotate(90deg)';
+          } else if (boardElements[i] == Block.Finish) {
+            elem.style.background = 'rgb(51, 0, 102)';
+            elem.style.transform = 'rotate(90deg)';
+          }
+        }
+      }
+    // }
   }, [boardSize])
 
   useEffect(() => {
@@ -42,8 +85,10 @@ export default function Middle() {
   }, []);
 
   return (
-    <div className={styles.middle}>
-      { getrDivList(boardSize) }
+    <div className={styles.middleOuter}>
+      <div className={styles.middle}>
+        { getrDivList(boardSize) }
+      </div>
     </div>
   )
 
@@ -74,3 +119,4 @@ function getBoxCount(width: number, height: number) {
   // }
   return [horizontalCount, verticalCount]
 }
+

@@ -5,6 +5,9 @@ import styles from '@/styles/Home.module.css'
 import React, { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 
+
+import { generateKruskal, Block } from '@/lib/kruskal';
+
 const inter = Inter({ subsets: ['latin'] })
 
 const Middle = dynamic(() => import('./Middle'), {
