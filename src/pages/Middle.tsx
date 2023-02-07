@@ -2,17 +2,20 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from '@/styles/Home.module.css';
 // import global_styles from '@/styles/globals.css'
 import { useBoardStore } from "./store/boardStore";
-import { generateKruskal, Block } from "@/lib/kruskal";
+import { generateKruskal } from "@/lib/kruskal";
+import { Block } from '@/lib/types'
 // import { shallow } from 'zustand/shallow'
 
 
 export default function Middle() {
-  const setBoardSize = useBoardStore((state)=>{return (size: Array<number>) => {state.setHeight(size[0]); state.setWidth(size[1])}})
-  const boardSize: Array<number> = useBoardStore<Array<number>>((state)=>[state.board.height, state.board.width])
+  const setBoardSize = useBoardStore((state)=>{return (size: Array<number>) => {state.setHeight(size[0]); state.setWidth(size[1])}});
+  const setBoardList = useBoardStore((state)=>{return (board: Array<Block>) => {state.setBoardList(board)}});
+  const boardSize: Array<number> = useBoardStore<Array<number>>((state)=>[state.board.height, state.board.width]);
+  const boardList: Array<Block> = useBoardStore<Array<number>>((state)=>state.board.boardList);
 
   let lastBoardSize = [0, 0];
 
-  const [resizeBoard, setResizeBoard] = useState<null | HTMLElement>(null);
+  const [resizeBoardElement, setResizeBoardElement] = useState<null | HTMLElement>(null);
 
   function handleEntry(entry: ResizeObserverEntry): void {
     let contentWidth  = Math.round(entry.contentRect.width);
@@ -23,6 +26,8 @@ export default function Middle() {
     if (lastBoardSize[0] != boxCount[0] || lastBoardSize[1] != boxCount[1]) {
       lastBoardSize = boxCount
       setBoardSize(boxCount);
+      let boardElements = generateKruskal(boxCount[0], boxCount[1])
+      setBoardList(boardElements);
     }
   }
 
@@ -37,40 +42,18 @@ export default function Middle() {
   });
 
   useEffect(() => {
-    // if (currBoardSize[0] != boardSize[0] || currBoardSize[1] != boardSize[1]) {
-      console.log('change')
-      // setCurrBoardSize(boardSize)
-      if (resizeBoard) {
+      if (resizeBoardElement) {
         // This is only updated when the board size actually changes.
-        resizeBoard.style.gridTemplateRows = 'repeat(' + boardSize[1] + ', 2fr)'
-        let boardElements = generateKruskal(boardSize[0], boardSize[1])
-        
-        for (let i=0; i < boardSize[0] * boardSize[1]; i++) {
-          let elem = document.getElementsByClassName(styles.middle)[0].children.item(i) as HTMLElement
-          if (boardElements[i] == Block.Wall) {
-            elem.style.background = 'black';
-            elem.style.transform = 'rotate(90deg)';
-          } else if (boardElements[i] == Block.Path) {
-            elem.style.background = 'rgb(220, 220, 220)';
-            elem.style.transform = 'rotate(0deg)';
-          } else if (boardElements[i] == Block.Start) {
-            elem.style.background = 'rgb(0, 51, 102)';
-            elem.style.transform = 'rotate(90deg)';
-          } else if (boardElements[i] == Block.Finish) {
-            elem.style.background = 'rgb(51, 0, 102)';
-            elem.style.transform = 'rotate(90deg)';
-          }
-        }
+        resizeBoardElement.style.gridTemplateRows = 'repeat(' + boardSize[1] + ', 2fr)'
       }
-    // }
   }, [boardSize])
 
   useEffect(() => {
     let observerRefValue: HTMLElement | null = null;
     if (typeof window !== 'undefined') {
       let elem = document.getElementsByClassName(styles.middle)[0] as HTMLElement
-      if (!resizeBoard) {
-        setResizeBoard(elem)
+      if (!resizeBoardElement) {
+        setResizeBoardElement(elem)
 
         console.log(elem)
         resizeObserver.observe(elem);
@@ -87,19 +70,30 @@ export default function Middle() {
   return (
     <div className={styles.middleOuter}>
       <div className={styles.middle}>
-        { getrDivList(boardSize) }
+        { getrDivList(boardList) }
       </div>
     </div>
   )
 
 }
 
-function getrDivList (arr: Array<number>) {
+function getrDivList (boardList: Array<Block>) {
   let divList: Array<JSX.Element> = [];
-  for (let i = 0; i < arr[1]; i++) {
-    for (let j = 0; j < arr[0]; j++) {
-      divList.push(<div className={styles.checkbox} key={j + i * arr[0]}/>);
+  for (let i = 0; i < boardList.length; i++) {
+      
+    let elem: JSX.Element;
+    if (boardList[i] == Block.Wall) {
+      elem = <div className={styles.checkbox + ' ' + styles.blockWall} key={i}/>
+    } else if (boardList[i] == Block.Path) {
+      elem = <div className={styles.checkbox + ' ' + styles.blockPath} key={i}/>
+    } else if (boardList[i] == Block.Start) {
+      elem = <div className={styles.checkbox + ' ' + styles.blockStart} key={i}/>
+    } else if (boardList[i] == Block.Finish) {
+      elem = <div className={styles.checkbox + ' ' + styles.blockFinish} key={i}/>
+    } else {
+      elem = <div className={styles.checkbox + ' ' + styles.blockFail} key={i}/>
     }
+    divList.push(elem);
   }
   return divList;
 }

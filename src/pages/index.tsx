@@ -5,8 +5,11 @@ import styles from '@/styles/Home.module.css'
 import React, { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 
+import { Block, Board, SearchPath } from '@/lib/types'
+import { generateKruskal } from '@/lib/kruskal';
+import { useBoardStore } from "./store/boardStore";
 
-import { generateKruskal, Block } from '@/lib/kruskal';
+import { generatePath } from '@/lib/searchalgorithms/dijkstra';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -14,7 +17,10 @@ const Middle = dynamic(() => import('./Middle'), {
   ssr: false
 })
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export default function Home() {
+  const boardList: Board = useBoardStore<Board>((state)=>state.board);
 
   return (
     <>
@@ -26,7 +32,7 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <div className={styles.startButtonOuter}>
-          <button className={styles.startButtonInner + ' ' + inter.className} onClick={startSeach}>Start</button>
+          <button className={styles.startButtonInner + ' ' + inter.className} onClick={() => {startSeach(boardList)}}>Start</button>
         </div>
         <Middle></Middle>
       </main>
@@ -36,10 +42,24 @@ export default function Home() {
 
 let rotationDeg: number = 90;
 
-function startSeach() {
-  let elem = document.getElementsByClassName(styles.middle)[0].children.item(5) as HTMLElement
-  elem.style.background = 'red';
-  elem.style.transform = 'rotate(' + rotationDeg + 'deg)';
+async function startSeach(board: Board) {
+  let searchpath: SearchPath = generatePath(board)
+  for (let index of searchpath.searchList) {
+    let elem = document.getElementsByClassName(styles.middle)[0].children.item(index) as HTMLElement
+    if (board.boardList[index] == Block.Path) {
+      elem.style.background = 'red';
+      elem.style.transform = 'rotate(' + rotationDeg + 'deg)';
+      await sleep(50)
+    }
+  }
+  for (let index of searchpath.shortestPath) {
+    let elem = document.getElementsByClassName(styles.middle)[0].children.item(index) as HTMLElement
+    if (board.boardList[index] == Block.Path) {
+      elem.style.background = 'yellow';
+      elem.style.transform = 'rotate(' + 0 + 'deg)';
+      await sleep(50)
+    }
+  }
   // rotationDeg += 90;
   // elem.style.transition = 'red 1000ms linear';
 }

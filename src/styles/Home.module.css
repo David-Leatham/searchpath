@@ -71,3 +71,23 @@
   margin: 30px;
   width: 150px;
 }
+
+.blockWall {
+  background: black;
+  transform: rotate(90deg);
+}
+
+.blockPath {
+  background: rgb(220, 220, 220);
+  transform: rotate(0deg);
+}
+
+.blockStart {
+  background: rgb(0, 51, 102);
+  transform: rotate(90deg);
+}
+
+.blockFinish {
+  background: rgb(51, 0, 102);
+  transform: rotate(90deg);
+}
