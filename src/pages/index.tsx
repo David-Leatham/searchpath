@@ -3,80 +3,13 @@ import Image from 'next/image'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
 import React, { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 
 const inter = Inter({ subsets: ['latin'] })
 
-
-function getrDivList (arr: Array<number>) {
-  let divList: Array<JSX.Element> = [];
-  for (let i = 0; i < arr[1]; i++) {
-    for (let j = 0; j < arr[0]; j++) {
-      divList.push(<div className={styles.checkbox} key={j + i * arr[0]}/>);
-    }
-  }
-  return divList;
-}
-
-function getBoxCount(width: number, height: number) {
-  let boxSize = 25;
-  let distance = 5;
-  let horizontalCount = Math.floor((width) / (boxSize + distance))
-  // console.log(width - (boxSize + distance) * horizontalCount + distance)
-  if ( width - (boxSize + distance) * horizontalCount + distance >= boxSize) {
-    horizontalCount += 1
-  }
-  let verticalCount = Math.floor((height) / (boxSize + distance))
-  // console.log(height, (boxSize + distance) * verticalCount + distance)
-  // if ( height - (boxSize + distance) * verticalCount >= boxSize) {
-  //   verticalCount += 1
-  // }
-  return [horizontalCount, verticalCount]
-}
-
-function Middle() {
-  const [boardSize, setBoardSize] = useState([0, 0]);
-  const middleDivRef = useRef(null);
-
-  if (typeof window !== 'undefined') {
-    const [resizeBoard, setResizeBoard] = useState(document.getElementsByClassName(styles.middle)[0] as HTMLElement);
-
-    // create element ref
-
-    useEffect(() => {
-      const resizeObserver = new ResizeObserver((entries) => {
-
-        for (const entry of entries) {
-          if (entry.contentBoxSize) {
-            console.log(entry.contentRect.width, (document.getElementsByClassName(styles.middle)[0] as HTMLElement).clientWidth)
-            setBoardSize(getBoxCount(Math.round(entry.contentRect.width), entry.contentRect.height));
-            // console.log('repeat(' + boardSize[0] + ', 10fr)')
-            // resizeBoard.style.gridTemplateColumns = 'repeat(' + boardSize[0] + ', 0fr)'
-            console.log(boardSize)
-            resizeBoard.style.gridTemplateRows = 'repeat(' + boardSize[1] + ', 2fr)'
-            // resizeBoard.style.backgroundColor = 'black';
-          }
-        }
-      });
-
-      if (middleDivRef.current) {
-        resizeObserver.observe(middleDivRef.current);
-      }
-      return () => {
-        if (middleDivRef.current) {
-          resizeObserver.observe(middleDivRef.current);
-        }
-      };
-    }, [boardSize, resizeBoard]);
-  }
-
-  return (
-    <div className={styles.middle} ref={middleDivRef}>
-      { getrDivList(boardSize) }
-    </div>
-  )
-
-}
-
+const Middle = dynamic(() => import('./Middle'), {
+  ssr: false
+})
 
 export default function Home() {
 
@@ -90,10 +23,20 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <div className={styles.startButtonOuter}>
-          <button className={styles.startButtonInner + ' ' + inter.className}>Start</button>
+          <button className={styles.startButtonInner + ' ' + inter.className} onClick={startSeach}>Start</button>
         </div>
         <Middle></Middle>
       </main>
     </>
   )
+}
+
+let rotationDeg: number = 90;
+
+function startSeach() {
+  let elem = document.getElementsByClassName(styles.middle)[0].children.item(5) as HTMLElement
+  elem.style.background = 'red';
+  elem.style.transform = 'rotate(' + rotationDeg + 'deg)';
+  // rotationDeg += 90;
+  // elem.style.transition = 'red 1000ms linear';
 }
