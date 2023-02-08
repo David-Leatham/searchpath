@@ -100,7 +100,7 @@ function getrDivList (boardList: Array<Block>) {
 
 function getBoxCount(width: number, height: number) {
   let boxSize = 25;
-  let distance = 5;
+  let distance = 2;
   let horizontalCount = Math.floor((width) / (boxSize + distance))
   // console.log(width - (boxSize + distance) * horizontalCount + distance)
   if ( width - (boxSize + distance) * horizontalCount + distance >= boxSize) {
