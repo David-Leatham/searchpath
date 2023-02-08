@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import styles from '@/styles/Home.module.css';
+import styles from './Middle.module.css';
 // import global_styles from '@/styles/globals.css'
-import { useBoardStore } from "./store/boardStore";
+import { useBoardStore } from "../store/boardStore";
 import { generateKruskal } from "@/lib/kruskal";
 import { Block } from '@/lib/types'
 // import { shallow } from 'zustand/shallow'

@@ -1,27 +1,18 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
+// import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
-import React, { useState, useEffect, useRef } from "react";
+// import React, { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
+import SettingsStrip from '@/pages/templates/SettingsStrip';
 
-import { Block, Board, SearchPath } from '@/lib/types'
-import { generateKruskal } from '@/lib/kruskal';
-import { useBoardStore } from "./store/boardStore";
 
-import { generatePath } from '@/lib/searchalgorithms/dijkstra';
 
-const inter = Inter({ subsets: ['latin'] })
-
-const Middle = dynamic(() => import('./Middle'), {
+const Middle = dynamic(() => import('./templates/Middle'), {
   ssr: false
 })
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export default function Home() {
-  const boardList: Board = useBoardStore<Board>((state)=>state.board);
-
   return (
     <>
       <Head>
@@ -31,55 +22,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div className={styles.startButtonOuter}>
-          <button className={styles.startButtonInner + ' ' + inter.className} onClick={() => {startSeach(boardList)}}>Start</button>
-        </div>
+        <SettingsStrip></SettingsStrip>
         <Middle></Middle>
       </main>
     </>
   )
-}
-
-let rotationDeg: number = 90;
-
-async function startSeach(board: Board) {
-  let startRGBColor = [221, 162, 6];
-  let endRGBColor = [243, 211, 174];
-  let searchpath: SearchPath = generatePath(board)
-  for (let index=0; index < searchpath.searchList.length; index++) {
-    let elem = document.getElementsByClassName(styles.middle)[0].children.item(searchpath.searchList[index]) as HTMLElement
-    if (board.boardList[searchpath.searchList[index]] == Block.Path) {
-      let r = scale(startRGBColor[0], endRGBColor[0], index / searchpath.searchList.length);
-      let g = scale(startRGBColor[1], endRGBColor[1], index / searchpath.searchList.length);
-      let b = scale(startRGBColor[2], endRGBColor[2], index / searchpath.searchList.length);
-      console.log('rgb(' + r + ',' + g + ',' + b + ')')
-      elem.style.background = 'rgb(' + r + ',' + g + ',' + b + ')';
-      elem.style.transform = 'rotate(' + rotationDeg + 'deg)';
-      await sleep(50)
-    }
-  }
-  for (let index of searchpath.shortestPath) {
-    let elem = document.getElementsByClassName(styles.middle)[0].children.item(index) as HTMLElement
-    if (board.boardList[index] == Block.Path) {
-      // elem.classList.add("blockShortestPath")
-      elem.style.background = '#D09683';
-      elem.style.transform = 'rotate(' + 0 + 'deg)';
-      await sleep(50)
-    }
-  }
-  // rotationDeg += 90;
-  // elem.style.transition = 'red 1000ms linear';
-}
-
-function scale(first: number, second: number, percent: number) {
-  let lower: number;
-  let higher: number;
-  if (first < second) {
-    lower = first;
-    higher = second;
-  } else {
-    lower = second;
-    higher = first;
-  }
-  return (higher - lower) * percent + lower 
 }

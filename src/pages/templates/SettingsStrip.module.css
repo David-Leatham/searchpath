@@ -1,0 +1,10 @@
+.startButtonOuter {
+  width:100%;
+  display: flex;
+  justify-content: center;
+}
+
+.startButtonInner {
+  margin: 30px;
+  width: 150px;
+}
