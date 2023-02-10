@@ -22,9 +22,6 @@ export default function dijkstraWidthFirst(start: number, finish: number, board:
           moves.push([move[0], nextBlock])
         }
       }
-      // finish.
-      // moves.push([nextBlock, newBlock]);
-      // nextBlock = newBlock;
       searchList.push(nextBlock);
       if (board.boardList[nextBlock] == Block.Finish) {
         finished = true;
