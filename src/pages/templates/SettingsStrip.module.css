@@ -1,10 +1,68 @@
-.startButtonOuter {
-  width:100%;
+.settingsOuter {
+  width: 250px;
+  height: 100%;
+  padding: 10px;
+}
+
+.settings {
+  width: 100%;
+  height: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  border-radius: 4px;
+  padding: 15px 9px;
+  background: rgba(149, 149, 149, 0.2);
+  gap: 30px;
+}
+
+
+
+.startButtonOuter {
+  /* width: 200px;
+  height: 100%; */
+  /* display: flex; */
+  /* justify-content: center; */
 }
 
 .startButtonInner {
-  margin: 30px;
-  width: 150px;
+  /* margin: 30px; */
+}
+
+.settingsCatergoryTitle {
+  width: 100%;
+  padding-bottom: 13px;
+  display:inline-block;
+  font-family:'Roboto',sans-serif;
+  font-weight:300;
+  color:#363636;
+  text-align:center;
+
+}
+
+a.button{
+  width: 100%;
+  display:inline-block;
+  padding:0.35em 1.2em;
+  /* border:0.1em solid #363636; */
+  margin:0 0.3em 0.3em 0;
+  border-radius:3px;
+  box-sizing: border-box;
+  text-decoration:none;
+  font-family:'Roboto',sans-serif;
+  font-weight:300;
+  color:#363636;
+  text-align:center;
+  transition: all 0.2s;
+  background-color:rgba(149, 149, 149, 0.3);
+  cursor: pointer;
+}
+
+a.buttonActive {
+  color:#000000;
+  background-color:rgba(149, 149, 149, 0.7);
+}
+
+a.button:hover{
+  color:#000000;
+  background-color:rgba(149, 149, 149, 0.7);
 }

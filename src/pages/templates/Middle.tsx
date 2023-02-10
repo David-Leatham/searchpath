@@ -20,7 +20,6 @@ export default function Middle() {
   function handleEntry(entry: ResizeObserverEntry): void {
     let contentWidth  = Math.round(entry.contentRect.width);
     let contentHeight = Math.round(entry.contentRect.height);
-
     let boxCount = getBoxCount(contentWidth, contentHeight);
     
     if (lastBoardSize[0] != boxCount[0] || lastBoardSize[1] != boxCount[1]) {
@@ -54,8 +53,6 @@ export default function Middle() {
       let elem = document.getElementsByClassName(styles.middle)[0] as HTMLElement
       if (!resizeBoardElement) {
         setResizeBoardElement(elem)
-
-        console.log(elem)
         resizeObserver.observe(elem);
         observerRefValue = elem;
       }
@@ -69,8 +66,10 @@ export default function Middle() {
 
   return (
     <div className={styles.middleOuter}>
-      <div className={styles.middle}>
-        { getrDivList(boardList) }
+      <div className={styles.middleOuter2}>
+        <div className={styles.middle}>
+          { getrDivList(boardList) }
+        </div>
       </div>
     </div>
   )
@@ -83,15 +82,15 @@ function getrDivList (boardList: Array<Block>) {
       
     let elem: JSX.Element;
     if (boardList[i] == Block.Wall) {
-      elem = <div className={styles.checkbox + ' ' + styles.blockWall} key={i}/>
+      elem = <div className={styles.checkbox + ' ' + styles.blockWall} key={i + Date.now()}/>
     } else if (boardList[i] == Block.Path) {
-      elem = <div className={styles.checkbox + ' ' + styles.blockPath} key={i}/>
+      elem = <div className={styles.checkbox + ' ' + styles.blockPath} key={i + Date.now()}/>
     } else if (boardList[i] == Block.Start) {
-      elem = <div className={styles.checkbox + ' ' + styles.blockStart} key={i}/>
+      elem = <div className={styles.checkbox + ' ' + styles.blockStart} key={i + Date.now()}/>
     } else if (boardList[i] == Block.Finish) {
-      elem = <div className={styles.checkbox + ' ' + styles.blockFinish} key={i}/>
+      elem = <div className={styles.checkbox + ' ' + styles.blockFinish} key={i + Date.now()}/>
     } else {
-      elem = <div className={styles.checkbox + ' ' + styles.blockFail} key={i}/>
+      elem = <div className={styles.checkbox + ' ' + styles.blockFail} key={i + Date.now()}/>
     }
     divList.push(elem);
   }
@@ -102,12 +101,10 @@ function getBoxCount(width: number, height: number) {
   let boxSize = 25;
   let distance = 2;
   let horizontalCount = Math.floor((width) / (boxSize + distance))
-  // console.log(width - (boxSize + distance) * horizontalCount + distance)
   if ( width - (boxSize + distance) * horizontalCount + distance >= boxSize) {
     horizontalCount += 1
   }
   let verticalCount = Math.floor((height) / (boxSize + distance))
-  // console.log(height, (boxSize + distance) * verticalCount + distance)
   // if ( height - (boxSize + distance) * verticalCount >= boxSize) {
   //   verticalCount += 1
   // }

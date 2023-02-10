@@ -23,10 +23,8 @@ export function generateKruskal(height: number, width: number): Array<Block> {
   let region_stack = [[[1, 1], [height - 2, width - 2]]]
 
   while (region_stack.length > 0) {
-    // console.log(region_stack)
     let current_region = region_stack.pop()
     if (current_region) {
-      // console.log(current_region)
       let min_y = current_region[0][0]
       let max_y = current_region[1][0]
       let min_x = current_region[0][1]
@@ -49,7 +47,6 @@ export function generateKruskal(height: number, width: number): Array<Block> {
         }
         cut_direction = Math.round(Math.random())
       }
-      // console.log(cut_direction)
   
       // MAKE CUT
       // select cut position (can't be completely on the edge of the region)
@@ -59,7 +56,6 @@ export function generateKruskal(height: number, width: number): Array<Block> {
       }
 
       // let cut_posi = randrange(1, cut_length, 2)
-      // console.log(cut_length - (1 - cut_length % 2))
       let cut_posi = randrange(1, cut_length - (1 - cut_length % 2), 2) // This cind of fixes the last row beeing taken up
       // select new door position
       let door_posi = randrange(0, [heightInner, widthInner][cut_direction], 2)
@@ -94,7 +90,6 @@ export function generateKruskal(height: number, width: number): Array<Block> {
     grid[1][1] = Block.Start
     grid[grid.length-2][grid[0].length-2] = Block.Finish
   }
-  console.log(width, height)
   
   let out: Array<number> = grid.flat(1);
   return out
