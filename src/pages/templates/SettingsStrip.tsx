@@ -7,6 +7,8 @@ import { Block, Board, SearchPath, SearchAlgorithm, SearchAlgorithmInfoList, Sea
 import { useBoardStore } from "../store/boardStore";
 import { useSearchAlgorithmsStore } from '../store/searchAlgorithmsStore'
 
+import { getSearchAlgorithmRunning, getSearchAlgorithmStopRunning, setSearchAlgorithmRunning, setSearchAlgorithmStopRunning } from '@/pages/store/globalVariables';
+
 // import searchAlorithmInfoList from '@/lib/searchalgorithms/searchAlgorithms'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -51,8 +53,8 @@ function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorithm, sear
   return async function () {
     // First clear the board
     
-    globalSearchAlgorithmStopRunning = true;
-    if (globalSearchAlgorithmRunning) {
+    setSearchAlgorithmStopRunning(true);
+    if (getSearchAlgorithmRunning()) {
       clear(boardList);
       await sleep(300);
     }
@@ -64,7 +66,7 @@ function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorithm, sear
 }
 
 function clear(boardList: Board) {
-  globalSearchAlgorithmStopRunning = true;
+  setSearchAlgorithmStopRunning(true);
   let middleDiv = document.getElementsByClassName(middleStyles.middle)[0]
   for (let i=0; i < boardList.boardList.length; i++) {
     if (boardList.boardList[i] == Block.Path) {
@@ -107,8 +109,8 @@ function getClassName(searchAlgorithm: SearchAlgorithm, searchAlgorithmInfo: Sea
   return out
 }
 
-var globalSearchAlgorithmStopRunning: boolean = false;
-var globalSearchAlgorithmRunning: boolean = false;
+// var globalSearchAlgorithmStopRunning: boolean = false;
+// var globalSearchAlgorithmRunning: boolean = false;
 
 async function startSeach(board: Board, searchAlgorithm: SearchAlgorithm, searchAlgorithmInfoList: SearchAlgorithmInfoList) {
   // const setAlgRunning = useBoardStore((state)=>{return (bool: boolean) => {state.setAlgRunning(bool)}});
@@ -125,12 +127,12 @@ async function startSeach(board: Board, searchAlgorithm: SearchAlgorithm, search
 	let startRGBColor = [221, 162, 6];
 	let endRGBColor = [243, 211, 174];
 	let searchpath: SearchPath = searchAlgorithmInfo.algorithm(board)
-  globalSearchAlgorithmStopRunning = false;
-  globalSearchAlgorithmRunning = true;
+  setSearchAlgorithmStopRunning(false);
+  setSearchAlgorithmRunning(true);
   let stop = false;
 	for (let index=0; index < searchpath.searchList.length; index++) {
-    if (globalSearchAlgorithmStopRunning) {
-      globalSearchAlgorithmRunning = false;
+    if (getSearchAlgorithmStopRunning()) {
+      setSearchAlgorithmRunning(false);
       stop = true;
       break
     }
@@ -145,8 +147,8 @@ async function startSeach(board: Board, searchAlgorithm: SearchAlgorithm, search
 		}
 	}
 	for (let index of searchpath.shortestPath) {
-    if (globalSearchAlgorithmStopRunning || stop) {
-      globalSearchAlgorithmRunning = false;
+    if (getSearchAlgorithmStopRunning() || stop) {
+      setSearchAlgorithmRunning(false);
       break
     }
     // if (!algRunning) {

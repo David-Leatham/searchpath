@@ -47,3 +47,4 @@ export function getValidNeighbours(position: number, board: Board): Array<number
   }
   return out
 }
+

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from './Middle.module.css';
+import { setSearchAlgorithmStopRunning } from '@/pages/store/globalVariables';
 // import global_styles from '@/styles/globals.css'
 import { useBoardStore } from "../store/boardStore";
 import { generateKruskal } from "@/lib/kruskal";
@@ -77,6 +78,7 @@ export default function Middle() {
 }
 
 function getrDivList (boardList: Array<Block>) {
+  setSearchAlgorithmStopRunning(true);
   let divList: Array<JSX.Element> = [];
   for (let i = 0; i < boardList.length; i++) {
       
