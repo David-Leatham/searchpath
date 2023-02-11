@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import styles from './Middle.module.css';
 import { setSearchAlgorithmStopRunning } from '@/pages/store/globalVariables';
 // import global_styles from '@/styles/globals.css'
 import { useBoardStore } from "../store/boardStore";
-import { generateKruskal } from "@/lib/kruskal";
-import { Block } from '@/lib/types'
+import { useMazeAlgorithmsStore } from '../store/mazeAlgorithmsStore'
+// import { generateKruskal } from "@/lib/mazes/kruskal";
+import { Block, MazeAlgorithm, MazeAlgorithmInfoList } from '@/lib/types'
 // import { shallow } from 'zustand/shallow'
 
 
@@ -14,23 +15,44 @@ export default function Middle() {
   const boardSize: Array<number> = useBoardStore<Array<number>>((state)=>[state.board.height, state.board.width]);
   const boardList: Array<Block> = useBoardStore<Array<number>>((state)=>state.board.boardList);
 
+  const mazeAlgorithm: MazeAlgorithm = useMazeAlgorithmsStore<MazeAlgorithm>((state)=>state.mazeAlgorithm);
+  const mazeAlgorithmInfoList: MazeAlgorithmInfoList = useMazeAlgorithmsStore<MazeAlgorithmInfoList>((state)=>state.mazeAlgorithmInfoList);
+  console.log(mazeAlgorithm)
   let lastBoardSize = [0, 0];
+
+  const mazeAlgorithmStateRef = useRef<MazeAlgorithm | null>(null);
+  mazeAlgorithmStateRef.current = mazeAlgorithm;
+
+  let updateBoard = true;
 
   const [resizeBoardElement, setResizeBoardElement] = useState<null | HTMLElement>(null);
 
-  function handleEntry(entry: ResizeObserverEntry): void {
+  const handleEntry = useCallback((entry: ResizeObserverEntry) => {
+    // console.log(mazeAlgorithmStateRef.current)
+    if(mazeAlgorithmStateRef.current === null) { return }
     let contentWidth  = Math.round(entry.contentRect.width);
     let contentHeight = Math.round(entry.contentRect.height);
     let boxCount = getBoxCount(contentWidth, contentHeight);
+
     
     if (lastBoardSize[0] != boxCount[0] || lastBoardSize[1] != boxCount[1]) {
-      lastBoardSize = boxCount
-      setBoardSize(boxCount);
-      let boardElements = generateKruskal(boxCount[0], boxCount[1])
-      setBoardList(boardElements);
-    }
-  }
+      
+      let mazeAlgorithmFkt: null | ((height: number, width: number) => Array<Block>) = null;
+      for (let mazeAlgorithmInfo of mazeAlgorithmInfoList) {
+        // console.log(mazeAlgorithmInfo.mazeAlgorithm, mazeAlgorithmStateRef.current)
+        if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithmStateRef.current) {
+          mazeAlgorithmFkt = mazeAlgorithmInfo.algorithm;
+        }
+      }
 
+      if (mazeAlgorithmFkt) {
+        lastBoardSize = boxCount
+        setBoardSize(boxCount);
+        let boardElements = mazeAlgorithmFkt(boxCount[0], boxCount[1])
+        setBoardList(boardElements);
+      }
+    }
+  }, []);
 
   const resizeObserver = new ResizeObserver((entries) => {
 
@@ -45,6 +67,19 @@ export default function Middle() {
       if (resizeBoardElement) {
         // This is only updated when the board size actually changes.
         resizeBoardElement.style.gridTemplateRows = 'repeat(' + boardSize[1] + ', 2fr)'
+
+        let mazeAlgorithmFkt: null | ((height: number, width: number) => Array<Block>) = null;
+        for (let mazeAlgorithmInfo of mazeAlgorithmInfoList) {
+          if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithm) {
+            mazeAlgorithmFkt = mazeAlgorithmInfo.algorithm;
+          }
+        }
+  
+        if (mazeAlgorithmFkt) {
+          
+          let boardElements = mazeAlgorithmFkt(boardSize[0], boardSize[1])
+          // setBoardList(boardElements);
+        }
       }
   }, [boardSize])
 

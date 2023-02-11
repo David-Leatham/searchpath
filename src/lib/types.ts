@@ -50,3 +50,24 @@ export interface SearchAlgorithmState {
   searchAlgorithmInfoList: SearchAlgorithmInfoList,
   setSearchAlorithm: (searchAlg: SearchAlgorithm) => void,
 }
+
+// Mazre Algorithm Types
+
+export enum MazeAlgorithm {
+  Kruskal,
+  Empty
+}
+
+export interface MazeAlgorithmInfo {
+  mazeAlgorithm: MazeAlgorithm,
+  name: string,
+  algorithm: (height: number, width: number) => Array<Block>
+}
+
+export type MazeAlgorithmInfoList = Array<MazeAlgorithmInfo>;
+
+export interface MazeAlgorithmState {
+  mazeAlgorithm: MazeAlgorithm,
+  mazeAlgorithmInfoList: MazeAlgorithmInfoList,
+  setMazeAlorithm: (mazeAlg: MazeAlgorithm) => void,
+}

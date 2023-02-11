@@ -1,4 +1,4 @@
-import { Block, Board, SearchPath, SearchAlgorithmInfoList, SearchAlgorithm } from '@/lib/types';
+import { SearchAlgorithmInfoList, SearchAlgorithm } from '@/lib/types';
 import { generatePathFkt } from './helpers'
 
 import dijkstraDepthFirst from './algorithms/dijkstraDepthFirst'

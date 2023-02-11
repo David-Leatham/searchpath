@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Block, Board, SearchAlgorithmState, SearchAlgorithm } from '@/lib/types'
+import { SearchAlgorithmState, SearchAlgorithm } from '@/lib/types'
 import searchAlgorithmInfoList from '@/lib/searchalgorithms/searchAlgorithms'
 
 export const useSearchAlgorithmsStore = create<SearchAlgorithmState>((set) => ({

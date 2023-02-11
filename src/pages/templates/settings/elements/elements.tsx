@@ -1,10 +1,11 @@
 import { Inter } from '@next/font/google'
 import settingsStripStyles from '../SettingsStrip.module.css'
-import { StartNewSearch, clear, getClassName } from './lib'
+import { StartNewSearch, clear, getClassNameSearch, getClassNameMaze } from './lib'
 
-import { Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo } from '@/lib/types'
+import { Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo, MazeAlgorithm, MazeAlgorithmInfoList, MazeAlgorithmInfo } from '@/lib/types'
 import { useBoardStore } from "../../../store/boardStore";
 import { useSearchAlgorithmsStore } from '../../../store/searchAlgorithmsStore'
+import { useMazeAlgorithmsStore } from '../../../store/mazeAlgorithmsStore'
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -42,7 +43,20 @@ export function SearchAlgorithmsElements(): JSX.Element {
   return (
     <div>
       { searchAlgorithmInfoList.map((searchAlgorithmInfo: SearchAlgorithmInfo, i) => {
-        return <a key={i} className={getClassName(searchAlgorithm, searchAlgorithmInfo)} onClick={() => {setSearchAlgorithm(searchAlgorithmInfo.searchAlgorithm)}}>{ searchAlgorithmInfo.name }</a>
+        return <a key={i} className={getClassNameSearch(searchAlgorithm, searchAlgorithmInfo)} onClick={() => {setSearchAlgorithm(searchAlgorithmInfo.searchAlgorithm)}}>{ searchAlgorithmInfo.name }</a>
+      })}
+    </div>
+  );
+}
+
+export function MazeElements(): JSX.Element {
+  const mazeAlgorithm: MazeAlgorithm = useMazeAlgorithmsStore<MazeAlgorithm>((state)=>state.mazeAlgorithm);
+  const mazeAlgorithmInfoList: MazeAlgorithmInfoList = useMazeAlgorithmsStore<MazeAlgorithmInfoList>((state)=>state.mazeAlgorithmInfoList);
+  const setMazeAlgorithm = useMazeAlgorithmsStore((state)=>{return (mazeAlgo: MazeAlgorithm) => {state.setMazeAlorithm(mazeAlgo)}});
+  return (
+    <div>
+      { mazeAlgorithmInfoList.map((mazeAlgorithmInfo: MazeAlgorithmInfo, i) => {
+        return <a key={i} className={getClassNameMaze(mazeAlgorithm, mazeAlgorithmInfo)} onClick={() => {setMazeAlgorithm(mazeAlgorithmInfo.mazeAlgorithm)}}>{ mazeAlgorithmInfo.name }</a>
       })}
     </div>
   );

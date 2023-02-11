@@ -1,10 +1,10 @@
-import { Block } from './types'
+import { Block } from '../../types'
 
 function randrange(min: number, max: number, range: number) {
   return Math.floor(Math.random() * (max - min) / range) * range + min;
 }
 
-export function generateKruskal(height: number, width: number): Array<Block> {
+export default function generateKruskal(height: number, width: number): Array<Block> {
   if (height == 0 || width == 0) {return []}
 
   let VERTICAL = 0
