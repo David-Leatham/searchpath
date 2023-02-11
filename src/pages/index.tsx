@@ -3,7 +3,7 @@ import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
 // import React, { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import SettingsStrip from '@/pages/templates/SettingsStrip';
+import SettingsStrip from '@/pages/templates/settings/SettingsStrip';
 
 
 
