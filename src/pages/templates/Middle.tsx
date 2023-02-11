@@ -21,6 +21,24 @@ export default function Middle() {
 
   const [resizeBoardElement, setResizeBoardElement] = useState<null | HTMLElement>(null);
 
+  const rerenderBoard = (boardSize: Array<number>) => {
+      
+    let mazeAlgorithmFkt: null | ((height: number, width: number) => Array<Block>) = null;
+    for (let mazeAlgorithmInfo of mazeAlgorithmInfoList) {
+      if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithmStateRef.current) {
+        mazeAlgorithmFkt = mazeAlgorithmInfo.algorithm;
+      }
+    }
+
+    if (mazeAlgorithmFkt) {
+      // lastBoardSize = boxCount
+      setBoardSize(boardSize);
+      let boardElements = mazeAlgorithmFkt(boardSize[0], boardSize[1])
+      setBoardList(boardElements);
+    }
+
+  }
+
   const handleEntry = useCallback((entry: ResizeObserverEntry) => {
     if(mazeAlgorithmStateRef.current === null) { return }
     let contentWidth  = Math.round(entry.contentRect.width);
@@ -29,20 +47,7 @@ export default function Middle() {
 
     
     if (lastBoardSize[0] != boxCount[0] || lastBoardSize[1] != boxCount[1]) {
-      
-      let mazeAlgorithmFkt: null | ((height: number, width: number) => Array<Block>) = null;
-      for (let mazeAlgorithmInfo of mazeAlgorithmInfoList) {
-        if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithmStateRef.current) {
-          mazeAlgorithmFkt = mazeAlgorithmInfo.algorithm;
-        }
-      }
-
-      if (mazeAlgorithmFkt) {
-        // lastBoardSize = boxCount
-        setBoardSize(boxCount);
-        let boardElements = mazeAlgorithmFkt(boxCount[0], boxCount[1])
-        setBoardList(boardElements);
-      }
+      rerenderBoard(boxCount);
     }
   }, []);
 
@@ -54,6 +59,11 @@ export default function Middle() {
       }
     }
   });
+
+  
+  useEffect(() => {
+    rerenderBoard(boardSize);
+  }, [mazeAlgorithm])
 
   useEffect(() => {
       if (resizeBoardElement) {
