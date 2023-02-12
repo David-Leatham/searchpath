@@ -2,6 +2,7 @@
 // Board Types
 
 export enum Block {
+  BoardBoundary,
 	Wall,
 	Path,
 	Start,

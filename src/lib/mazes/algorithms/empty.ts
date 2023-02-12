@@ -5,12 +5,12 @@ export default function empty(height: number, width: number): Array<Block> {
   
   let grid = new Array(height).fill(0).map(() => new Array(width).fill(Block.Path))
   // new Array(width));
-  grid[0] = new Array(width).fill(Block.Wall)
-  grid[height-1] = new Array(width).fill(Block.Wall)
+  grid[0] = new Array(width).fill(Block.BoardBoundary)
+  grid[height-1] = new Array(width).fill(Block.BoardBoundary)
 
   for (let row of grid) {
-    row[0] = Block.Wall;
-    row[row.length-1] = Block.Wall;
+    row[0] = Block.BoardBoundary;
+    row[row.length-1] = Block.BoardBoundary;
   }
   
   if ((width >= 3 && height >= 4) || (width >= 4 && height >= 3)) {

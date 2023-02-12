@@ -129,7 +129,7 @@ interface BlockDrawableDiv {
 
 function BlockDiv({block}: BlockDivProps) {
   let elem: JSX.Element;
-  if (block == Block.Wall) {
+  if (block == Block.Wall || Block.BoardBoundary) {
     elem = <div className={styles.checkbox + ' ' + styles.blockWall}/>
   } else if (block == Block.Path) {
     elem = <div className={styles.checkbox + ' ' + styles.blockPath}/>

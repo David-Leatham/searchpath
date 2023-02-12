@@ -40,7 +40,7 @@ export function getValidNeighbours(position: number, board: Board): Array<number
   let out: Array<number> = [];
   for (position of posibilities) {
     if (position >= 0 && position < board.boardList.length) {
-      if (board.boardList[position] != Block.Wall) {
+      if (board.boardList[position] != Block.Wall && board.boardList[position] != Block.BoardBoundary) {
         out.push(position);
       }
     }
