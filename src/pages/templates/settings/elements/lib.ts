@@ -3,7 +3,7 @@ import settingsStripStyles from '../SettingsStrip.module.css'
 
 import { Inter } from '@next/font/google'
 
-import { Block, Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo, SearchPath, MazeAlgorithm, MazeAlgorithmInfo } from '@/lib/types'
+import { Block, Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo, SearchPath, MazeAlgorithm, MazeAlgorithmInfo, Style, StyleInfo } from '@/lib/types'
 import { getSearchAlgorithmRunning, getSearchAlgorithmStopRunning, setSearchAlgorithmRunning, setSearchAlgorithmStopRunning } from '@/pages/store/globalVariables';
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -115,3 +115,12 @@ export function getClassNameMaze(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfo
   }
   return out
 }
+
+export function getClassNameStyle(style: Style, styleInfo: StyleInfo): string {
+  let out = settingsStripStyles.button + ' ' + inter.className 
+  if (style == styleInfo.style) {
+    out += ' ' + settingsStripStyles.buttonActive
+  }
+  return out
+}
+

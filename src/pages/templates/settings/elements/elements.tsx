@@ -1,11 +1,12 @@
-import { Inter } from '@next/font/google'
-import settingsStripStyles from '../SettingsStrip.module.css'
-import { StartNewSearch, clear, getClassNameSearch, getClassNameMaze } from './lib'
+import { Inter } from '@next/font/google';
+import settingsStripStyles from '../SettingsStrip.module.css';
+import { StartNewSearch, clear, getClassNameSearch, getClassNameMaze, getClassNameStyle } from './lib';
 
-import { Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo, MazeAlgorithm, MazeAlgorithmInfoList, MazeAlgorithmInfo } from '@/lib/types'
+import { Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo, MazeAlgorithm, MazeAlgorithmInfoList, MazeAlgorithmInfo, StyleInfoList, StyleInfo, Style } from '@/lib/types';
 import { useBoardStore } from "../../../store/boardStore";
-import { useSearchAlgorithmsStore } from '../../../store/searchAlgorithmsStore'
-import { useMazeAlgorithmsStore } from '../../../store/mazeAlgorithmsStore'
+import { useSearchAlgorithmsStore } from '../../../store/searchAlgorithmsStore';
+import { useMazeAlgorithmsStore } from '../../../store/mazeAlgorithmsStore';
+import { useStyleStore } from '../../../store/styleStore';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -57,6 +58,19 @@ export function MazeElements(): JSX.Element {
     <div>
       { mazeAlgorithmInfoList.map((mazeAlgorithmInfo: MazeAlgorithmInfo, i) => {
         return <a key={i} className={getClassNameMaze(mazeAlgorithm, mazeAlgorithmInfo)} onClick={() => {setMazeAlgorithm(mazeAlgorithmInfo.mazeAlgorithm)}}>{ mazeAlgorithmInfo.name }</a>
+      })}
+    </div>
+  );
+}
+
+export function StyleElements(): JSX.Element {
+  const style: Style = useStyleStore<Style>((state)=>state.style);
+  const styleInfoList: StyleInfoList = useStyleStore<StyleInfoList>((state)=>state.styleInfoList);
+  const setStyle = useStyleStore((state)=>{return (style: Style) => {state.setStyle(style)}});
+  return (
+    <div>
+      { styleInfoList.map((styleInfo: StyleInfo, i) => {
+        return <a key={i} className={getClassNameStyle(style, styleInfo)} onClick={() => {setStyle(styleInfo.style)}}>{ styleInfo.name }</a>
       })}
     </div>
   );

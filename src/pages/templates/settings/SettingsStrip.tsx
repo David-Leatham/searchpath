@@ -1,5 +1,5 @@
 import settingsStripStyles from './SettingsStrip.module.css'
-import { Title, StartSearchButton, ClearSearchButten, SearchAlgorithmsElements, MazeElements } from './elements/elements'
+import { Title, StartSearchButton, ClearSearchButten, SearchAlgorithmsElements, MazeElements, StyleElements } from './elements/elements'
 
 export default function SettingsStrip() {
 	return (
@@ -9,14 +9,18 @@ export default function SettingsStrip() {
           <StartSearchButton></StartSearchButton>
           <ClearSearchButten></ClearSearchButten>
         </div>
-				<div>
+		    <div>
           <Title title='Shortest Path Algorithms'></Title>
           <SearchAlgorithmsElements></SearchAlgorithmsElements>
-				</div>
-				<div>
+		    </div>
+			  <div>
           <Title title='Maizes'></Title>
           <MazeElements></MazeElements>
-				</div>
+			  </div>
+			  <div>
+          <Title title='Styles'></Title>
+          <StyleElements></StyleElements>
+			  </div>
 			</div>
 		</div>
 	)

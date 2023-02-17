@@ -72,3 +72,22 @@ export interface MazeAlgorithmState {
   mazeAlgorithmInfoList: MazeAlgorithmInfoList,
   setMazeAlorithm: (mazeAlg: MazeAlgorithm) => void,
 }
+
+// Style types
+export enum Style {
+  BlueOrage,
+  Dark
+}
+
+export interface StyleInfo {
+  style: Style,
+  name: string,
+}
+
+export type StyleInfoList = Array<StyleInfo>;
+
+export interface StyleState {
+  style: Style,
+  styleInfoList: StyleInfoList,
+  setStyle: (style: Style) => void,
+}
