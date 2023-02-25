@@ -4,5 +4,18 @@
   flex-direction: row;
   height: 100%;
   width: 100%;
-  background-color: rgb(237, 244, 255);
+}
+
+.noWalls {
+  background-color: rgb(218, 229, 245);
+
+}
+
+.orangeBlue {
+  /* background-color: rgb(237, 244, 255); */
+  background-color: rgb(218, 229, 245);
+}
+
+.dark {
+  background-color: black;
 }

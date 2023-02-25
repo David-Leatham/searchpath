@@ -1,15 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import styles from './Middle.module.css';
-import { setSearchAlgorithmStopRunning } from '@/pages/store/globalVariables';
-import { useBoardStore } from "../store/boardStore";
-import { useMazeAlgorithmsStore } from '../store/mazeAlgorithmsStore';
-import { Block, MazeAlgorithm, MazeAlgorithmInfoList } from '@/lib/types';
+import { setSearchAlgorithmStopRunning } from '@/lib/store/globalVariables';
+import { useBoardStore } from "@/lib/store/boardStore";
+import { useMazeAlgorithmsStore } from '@/lib/store/mazeAlgorithmsStore';
+import { useStyleStore } from '@/lib/store/styleStore';
+import { Block, MazeAlgorithm, MazeAlgorithmInfoList, Style, StyleInfoList } from '@/lib/types';
+import classNames from 'classnames'
+import { conditionalStyleDict } from '@/lib/hepers'
+
+import ResizeObserver from 'resize-observer-polyfill';
+
 
 export default function Middle() {
   const setBoardSize = useBoardStore((state)=>{return (size: Array<number>) => {state.setHeight(size[0]); state.setWidth(size[1])}});
   const setBoardList = useBoardStore((state)=>{return (board: Array<Block>) => {state.setBoardList(board)}});
   const boardSize: Array<number> = useBoardStore<Array<number>>((state)=>[state.board.height, state.board.width]);
   const boardList: Array<Block> = useBoardStore<Array<number>>((state)=>state.board.boardList);
+
+  const style: Style = useStyleStore<Style>((state)=>state.style);
+  const styleInfoList: StyleInfoList = useStyleStore<StyleInfoList>((state)=>state.styleInfoList);
 
   const mazeAlgorithm: MazeAlgorithm = useMazeAlgorithmsStore<MazeAlgorithm>((state)=>state.mazeAlgorithm);
   const mazeAlgorithmInfoList: MazeAlgorithmInfoList = useMazeAlgorithmsStore<MazeAlgorithmInfoList>((state)=>state.mazeAlgorithmInfoList);
@@ -92,7 +101,7 @@ export default function Middle() {
   }, []);
 
   return (
-    <div className={styles.middleOuter}>
+    <div className={classNames(styles.middleOuter, conditionalStyleDict(style, styleInfoList, styles))}>
       <div className={styles.middleOuter2}>
         <div className={styles.middle} ref={middleRef}>
           { getrBoardDivList(boardList, mazeAlgorithm) }

@@ -1,12 +1,12 @@
 import { Inter } from '@next/font/google';
-import settingsStripStyles from '../SettingsStrip.module.css';
+import settingsStripStyles from '@/pages/templates/settings/SettingsStrip.module.css';
 import { StartNewSearch, clear, getClassNameSearch, getClassNameMaze, getClassNameStyle } from './lib';
 
 import { Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo, MazeAlgorithm, MazeAlgorithmInfoList, MazeAlgorithmInfo, StyleInfoList, StyleInfo, Style } from '@/lib/types';
-import { useBoardStore } from "../../../store/boardStore";
-import { useSearchAlgorithmsStore } from '../../../store/searchAlgorithmsStore';
-import { useMazeAlgorithmsStore } from '../../../store/mazeAlgorithmsStore';
-import { useStyleStore } from '../../../store/styleStore';
+import { useBoardStore } from "@/lib/store/boardStore";
+import { useSearchAlgorithmsStore } from '@/lib/store/searchAlgorithmsStore';
+import { useMazeAlgorithmsStore } from '@/lib/store/mazeAlgorithmsStore';
+import { useStyleStore } from '@/lib/store/styleStore';
 
 const inter = Inter({ subsets: ['latin'] });
 

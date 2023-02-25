@@ -4,8 +4,8 @@
   /* flex-shrink: 1; */
   min-width: 0;
   min-height: 0;
-  padding: 5px;
-  /* display: flex; */
+  padding: 10px;
+  padding-left: 5px;  /* display: flex; */
 }
 
 .middleOuter2 {
@@ -29,14 +29,31 @@
   width: 25px;
   height: 25px;
   border-radius: 4px;
-  background-color: black;
+  /* background-color: black; */
   transition: transform 300ms, background-color 300ms linear;
 }
 
+.orangeBlue {}
+.dark {}
+
 .blockWall {
-  background: #2a3132;
+  background: #1eb8cd;
   transform: rotate(90deg);
 }
+
+.orangeBlue .blockWall {
+  background: #2a3132;
+}
+
+.dark .blockWall {
+  background: #07325b;
+}
+
+.noWalls .blockWall {
+  background-color: rgb(218, 229, 245);
+}
+
+
 
 .blockPath {
   background: rgb(144, 175, 197);
@@ -48,7 +65,15 @@
   transform: rotate(90deg);
 }
 
+.dark .blockStart {
+  background: #704b1e;
+}
+
 .blockFinish {
   background: #29566c;
   transform: rotate(90deg);
+}
+
+.dark .blockFinish {
+  background: #704b1e;
 }

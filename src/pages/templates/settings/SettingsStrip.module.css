@@ -11,9 +11,20 @@
   flex-direction: column;
   border-radius: 4px;
   padding: 15px 9px;
-  background: rgba(149, 149, 149, 0.2);
   gap: 30px;
 }
+
+.orangeBlue {}
+.dark {}
+
+.orangeBlue > .settings {
+  background: rgba(149, 149, 149, 0.2);
+}
+
+.dark > .settings {
+  background: rgba(200, 200, 200, 1);
+}
+
 
 
 

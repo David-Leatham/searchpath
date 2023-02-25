@@ -1,10 +1,10 @@
-import middleStyles from '../../Middle.module.css'
-import settingsStripStyles from '../SettingsStrip.module.css'
+import middleStyles from '@/pages/templates/Middle.module.css'
+import settingsStripStyles from '@/pages/templates/settings/SettingsStrip.module.css'
 
 import { Inter } from '@next/font/google'
 
 import { Block, Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo, SearchPath, MazeAlgorithm, MazeAlgorithmInfo, Style, StyleInfo } from '@/lib/types'
-import { getSearchAlgorithmRunning, getSearchAlgorithmStopRunning, setSearchAlgorithmRunning, setSearchAlgorithmStopRunning } from '@/pages/store/globalVariables';
+import { getSearchAlgorithmRunning, getSearchAlgorithmStopRunning, setSearchAlgorithmRunning, setSearchAlgorithmStopRunning } from '@/lib/store/globalVariables';
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const inter = Inter({ subsets: ['latin'] })

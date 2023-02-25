@@ -1,9 +1,17 @@
 import settingsStripStyles from './SettingsStrip.module.css'
-import { Title, StartSearchButton, ClearSearchButten, SearchAlgorithmsElements, MazeElements, StyleElements } from './elements/elements'
+import { Title, StartSearchButton, ClearSearchButten, SearchAlgorithmsElements, MazeElements, StyleElements } from '../../../lib/elements/elements'
+import classNames from 'classnames'
+import { useStyleStore } from '@/lib/store/styleStore';
+import { Style, StyleInfoList } from '@/lib/types'
+import { conditionalStyleDict } from '@/lib/hepers'
+
 
 export default function SettingsStrip() {
+  const style: Style = useStyleStore<Style>((state)=>state.style);
+  const styleInfoList: StyleInfoList = useStyleStore<StyleInfoList>((state)=>state.styleInfoList);
+
 	return (
-		<div className={settingsStripStyles.settingsOuter}>
+		<div className={classNames(settingsStripStyles.settingsOuter, conditionalStyleDict(style, styleInfoList, settingsStripStyles))}>
 			<div className={settingsStripStyles.settings}>
         <div>
           <StartSearchButton></StartSearchButton>

@@ -76,12 +76,14 @@ export interface MazeAlgorithmState {
 // Style types
 export enum Style {
   BlueOrage,
-  Dark
+  Dark,
+  NoWalls
 }
 
 export interface StyleInfo {
   style: Style,
   name: string,
+  cssTag: string
 }
 
 export type StyleInfoList = Array<StyleInfo>;
