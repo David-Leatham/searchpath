@@ -131,7 +131,7 @@ interface BlockDivProps {
   block: Block
 }
 
-interface BlockDrawableDiv {
+interface BlockDrawableDivInput {
   block: Block,
   index: number
 }
@@ -152,7 +152,7 @@ function BlockDiv({block}: BlockDivProps) {
   return elem
 }
 
-function BlockDrawableDiv({block, index}: BlockDrawableDiv) {
+function BlockDrawableDiv({block, index}: BlockDrawableDivInput) {
   const setBoardList = useBoardStore((state)=>{return (board: Array<Block>) => {state.setBoardList(board)}});
   const boardList: Array<Block> = useBoardStore<Array<number>>((state)=>state.board.boardList);
 

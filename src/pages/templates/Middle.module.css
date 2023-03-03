@@ -30,7 +30,7 @@
   height: 25px;
   border-radius: 4px;
   /* background-color: black; */
-  transition: transform 300ms, background-color 300ms linear;
+  /* transition: transform 300ms, background-color 300ms linear; */
 }
 
 .orangeBlue {}
@@ -38,7 +38,8 @@
 
 .blockWall {
   background: #1eb8cd;
-  transform: rotate(90deg);
+  transition: None;
+  /* transform: rotate(90deg); */
 }
 
 .orangeBlue .blockWall {
@@ -56,13 +57,14 @@
 
 
 .blockPath {
+  transition: None;
   background: rgb(144, 175, 197);
   transform: rotate(0deg);
 }
 
 .blockStart {
   background: #29566c;
-  transform: rotate(90deg);
+  /* transform: rotate(90deg); */
 }
 
 .dark .blockStart {

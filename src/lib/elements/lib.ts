@@ -65,6 +65,7 @@ async function startSeach(board: Board, searchAlgorithm: SearchAlgorithm, search
 			let r = scale(startRGBColor[0], endRGBColor[0], index / searchpath.searchList.length);
 			let g = scale(startRGBColor[1], endRGBColor[1], index / searchpath.searchList.length);
 			let b = scale(startRGBColor[2], endRGBColor[2], index / searchpath.searchList.length);
+      elem.style.transition = 'transform 300ms, background-color 300ms linear';
 			elem.style.background = 'rgb(' + r + ',' + g + ',' + b + ')';
 			elem.style.transform = 'rotate(90deg)';
 			await sleep(50)
@@ -78,6 +79,7 @@ async function startSeach(board: Board, searchAlgorithm: SearchAlgorithm, search
 		let elem = document.getElementsByClassName(middleStyles.middle)[0].children.item(index) as HTMLElement
 		if (board.boardList[index] == Block.Path) {
 			// elem.classList.add("blockShortestPath")
+      elem.style.transition = 'transform 300ms, background-color 300ms linear';
 			elem.style.background = '#D09683';
 			elem.style.transform = 'rotate(' + 0 + 'deg)';
 			await sleep(50)
