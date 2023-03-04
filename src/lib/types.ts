@@ -85,6 +85,13 @@ export interface MazeAlgorithmState {
   setMazeAlorithm: (mazeAlg: MazeAlgorithm) => void,
 }
 
+// Slow Maze State
+
+export interface SlowMazeState {
+  slowMazeState: boolean,
+  toggleSlowMazeState: () => void,
+}
+
 // Style types
 export enum Style {
   BlueOrage,

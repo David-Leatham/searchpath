@@ -7,6 +7,9 @@ import { useBoardStore } from "@/lib/store/boardStore";
 import { useSearchAlgorithmsStore } from '@/lib/store/searchAlgorithmsStore';
 import { useMazeAlgorithmsStore } from '@/lib/store/mazeAlgorithmsStore';
 import { useStyleStore } from '@/lib/store/styleStore';
+import { useSlowMazeStateStore } from '@/lib/store/slowMazeStateStore';
+
+import classNames from 'classnames';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -33,6 +36,14 @@ export function ClearSearchButten() {
 	const boardList: Board = useBoardStore<Board>((state)=>state.board);
   return (
     <a className={settingsStripStyles.button + ' ' + inter.className} onClick={()=>{clear(boardList)}}>Clear</a>
+  )
+}
+
+export function SlowMazeGenerationToggleButton() {
+	const slowMazeState: boolean = useSlowMazeStateStore<boolean>((state)=>state.slowMazeState);
+  const toggleSlowMazeState = useSlowMazeStateStore((state)=>{return () => {state.toggleSlowMazeState()}});
+  return (
+    <a className={classNames(settingsStripStyles.button + ' ' + inter.className, {[settingsStripStyles.buttonActive]: slowMazeState})} onClick={toggleSlowMazeState}>Toggle slow Maze Generation</a>
   )
 }
 

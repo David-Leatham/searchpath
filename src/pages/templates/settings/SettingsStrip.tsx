@@ -1,5 +1,5 @@
 import settingsStripStyles from './SettingsStrip.module.css'
-import { Title, StartSearchButton, ClearSearchButten, SearchAlgorithmsElements, MazeElements, StyleElements } from '../../../lib/elements/elements'
+import { Title, StartSearchButton, ClearSearchButten, SearchAlgorithmsElements, MazeElements, StyleElements, SlowMazeGenerationToggleButton } from '@/lib/elements/elements'
 import classNames from 'classnames'
 import { useStyleStore } from '@/lib/store/styleStore';
 import { Style, StyleInfoList } from '@/lib/types'
@@ -16,6 +16,7 @@ export default function SettingsStrip() {
         <div>
           <StartSearchButton></StartSearchButton>
           <ClearSearchButten></ClearSearchButten>
+          <SlowMazeGenerationToggleButton></SlowMazeGenerationToggleButton>
         </div>
 		    <div>
           <Title title='Shortest Path Algorithms'></Title>
