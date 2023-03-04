@@ -22,7 +22,7 @@ export default function Middle() {
 
   const mazeAlgorithm: MazeAlgorithm = useMazeAlgorithmsStore<MazeAlgorithm>((state)=>state.mazeAlgorithm);
   const mazeAlgorithmInfoList: MazeAlgorithmInfoList = useMazeAlgorithmsStore<MazeAlgorithmInfoList>((state)=>state.mazeAlgorithmInfoList);
-  let lastBoardSize = [0, 0];
+  let lastBoardSize = useRef<Array<number>>([0, 0]);
 
   const middleRef = useRef(null);
 
@@ -55,8 +55,8 @@ export default function Middle() {
     let contentHeight = Math.round(entry.contentRect.height);
     let boxCount = getBoxCount(contentWidth, contentHeight);
 
-    
-    if (lastBoardSize[0] != boxCount[0] || lastBoardSize[1] != boxCount[1]) {
+    if (lastBoardSize.current[0] != boxCount[0] || lastBoardSize.current[1] != boxCount[1]) {
+      lastBoardSize.current = boxCount
       rerenderBoard(boxCount);
     }
   }, []);
