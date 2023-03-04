@@ -57,7 +57,8 @@ export interface SearchAlgorithmState {
 export enum MazeAlgorithm {
   Kruskal,
   Empty,
-  RecursiveDivision
+  RecursiveDivision,
+  RecursiveBacktracking
 }
 
 export interface MazeAlgorithmInfo {

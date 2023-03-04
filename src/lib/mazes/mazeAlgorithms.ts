@@ -1,9 +1,9 @@
 import { MazeAlgorithmInfoList, MazeAlgorithm } from '@/lib/types';
-// import { generatePathFkt } from './helpers'
 
-import kruskal from './algorithms/kruskal'
-import empty from './algorithms/empty'
-import recursiveDivision from './algorithms/recursiveDivision'
+import kruskal from './algorithms/kruskal';
+import empty from './algorithms/empty';
+import recursiveDivision from './algorithms/recursiveDivision';
+import recursiveBacktracking from './algorithms/recursiveBacktracking';
 
 
 
@@ -17,6 +17,10 @@ let searchAlgorithmInfoList: MazeAlgorithmInfoList = [
   { mazeAlgorithm: MazeAlgorithm.RecursiveDivision,
     name: 'Recursive Division',
     algorithm: recursiveDivision
+  },
+  { mazeAlgorithm: MazeAlgorithm.RecursiveBacktracking,
+    name: 'Recursive Backtracking',
+    algorithm: recursiveBacktracking
   }
 ]
 
