@@ -111,7 +111,7 @@ export default function Middle() {
 
 }
 
-function getrBoardDivList (boardList: Array<Block>, mazeAlgorithm: MazeAlgorithm): JSX.Element[] {
+function getrBoardDivList(boardList: Array<Block>, mazeAlgorithm: MazeAlgorithm): JSX.Element[] {
   setSearchAlgorithmStopRunning(true);
   let drawable = mazeAlgorithm == MazeAlgorithm.Empty;
   let divList: Array<JSX.Element> = [];
