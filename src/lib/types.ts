@@ -2,8 +2,8 @@
 // Board Types
 
 export interface Position {
-  x: number;
-  y: number;
+  heightCoord: number;
+  widthCoord: number;
 }
 
 export enum Block {
