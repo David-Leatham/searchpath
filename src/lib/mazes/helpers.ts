@@ -8,9 +8,9 @@ export function nothin() {}
 //     return  retFkt
 //   }
 
-export function getInnerPathArray(height: number, width: number): null | Array<Array<Block>> {
+export function getInnerPathArray(block: Block, height: number, width: number): null | Array<Array<Block>> {
   if ((width >= 3 && height >= 4) || (width >= 4 && height >= 3)) {
-    return new Array(height-2).fill(0).map(() => new Array(width-2).fill(Block.Path))
+    return new Array(height-2).fill(0).map(() => new Array(width-2).fill(block))
   }
   return null
 }

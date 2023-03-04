@@ -2,7 +2,7 @@ import { Block } from '@/lib/types'
 import { getInnerPathArray, innerPathArrayAddStartFinish, innerPathArrayToOut, getRandomInt} from '../helpers'
 
 export default function empty(height: number, width: number): Array<Block> {
-  let grid = getInnerPathArray(height, width);
+  let grid = getInnerPathArray(Block.Path, height, width);
   if (!grid) {return []}
 
   recursiveDivide(grid, 0, height-2, 0, width-2)
