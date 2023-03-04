@@ -14,7 +14,6 @@ export default function recursiveBacktracking(height: number, width: number): Ar
 }
 
 function rBImplementatoin(position: Position, visited: Array<Position>, visitedNoNeighbors: Array<Position>, grid: Array<Array<Block>>, height: number, width: number): void {
-  // console.log(position)
   let neighborsAr = neighbors(position, visited, visitedNoNeighbors, height, width);
   if (!neighborsAr.length) {
     visitedNoNeighbors.push(position)
@@ -48,56 +47,23 @@ function neighbors(position: Position, visited: Array<Position>, visitedNoNeighb
   if (position.widthCoord < width - 2) {
     neighborsLi.push({heightCoord: position.heightCoord, widthCoord: position.widthCoord + 2})
   }
-  // console.log(neighborsLi);
-  // let tmp = [...neighborsLi];
+
   let i=0;
   while (i < neighborsLi.length) {
     for (let visitedPos of visited.concat(visitedNoNeighbors)) {
-      // console.log(visitedPos, neighborsLi[i], isEqual(visitedPos, neighborsLi[i]))
       if (isEqual(visitedPos, neighborsLi[i])) {
-        // console.log(i)
-        // console.log(neighborsLi)
         neighborsLi.splice(i, 1)
-        // console.log(neighborsLi)
         i -= 1
         break
       }
     }
     i += 1
   }
-  // console.log(neighborsLi);
-  // if (!neighborsLi.length) {
-  //   for (let visitedPos of visited.concat(visitedNoNeighbors)) {
-  //     console.log(visitedPos)
-  //   }
-  //   console.log('a')
-  //   console.log(tmp)
-    
-  //   let i=0;
-  //   while (i < tmp.length) {
-  //     for (let visitedPos of visited.concat(visitedNoNeighbors)) {
-  //       // console.log(visitedPos, neighborsLi[i], isEqual(visitedPos, neighborsLi[i]))
-  //       if (isEqual(visitedPos, tmp[i])) {
-  //         console.log(visitedPos, tmp[i])
-  //         // console.log(i)
-  //         // console.log(neighborsLi)
-  //         tmp.splice(i, 1)
-  //         // console.log(neighborsLi)
-  //         i -= 1
-  //         break
-  //       }
-  //     }
-  //     i += 1
-  //   }
-  //   console.log(tmp)
-  //   console.log('end')
-  // }
   return neighborsLi
 }
 
 function fillSides(grid: Array<Array<Block>>, height: number, width: number): void {
   if (width % 2 == 0) {
-    console.log('width')
     let fillPosition = 0
     while (fillPosition < width) {
       grid[fillPosition][width-1] = Block.Path
@@ -105,7 +71,6 @@ function fillSides(grid: Array<Array<Block>>, height: number, width: number): vo
     }
   }
   if (height % 2 == 0) {
-    console.log('height')
     let fillPosition = 0
     while (fillPosition < height) {
       grid[height-1][fillPosition] = Block.Path
