@@ -3,6 +3,7 @@ import { MazeAlgorithmInfoList, MazeAlgorithm } from '@/lib/types';
 
 import kruskal from './algorithms/kruskal'
 import empty from './algorithms/empty'
+import recursiveDivision from './algorithms/recursive_division'
 
 
 
@@ -12,7 +13,11 @@ let searchAlgorithmInfoList: MazeAlgorithmInfoList = [
     algorithm: kruskal},
   { mazeAlgorithm: MazeAlgorithm.Empty,
     name: 'Empty',
-    algorithm: empty}
+    algorithm: empty},
+  { mazeAlgorithm: MazeAlgorithm.RecursiveDivision,
+    name: 'Recursive Division',
+    algorithm: recursiveDivision
+  }
 ]
 
 export default searchAlgorithmInfoList

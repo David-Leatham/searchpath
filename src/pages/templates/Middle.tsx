@@ -44,7 +44,6 @@ export default function Middle() {
       // lastBoardSize = boxCount
       setBoardSize(boardSize);
       let boardElements = mazeAlgorithmFkt(boardSize[0], boardSize[1])
-      // console.log('setting from alg')
       setBoardList(boardElements);
     }
 
@@ -140,6 +139,8 @@ function BlockDiv({block}: BlockDivProps) {
   let elem: JSX.Element;
   if (block == Block.Wall || Block.BoardBoundary) {
     elem = <div className={styles.checkbox + ' ' + styles.blockWall}/>
+  } else if (block == Block.BoardBoundary) {
+    elem = <div className={styles.checkbox + ' ' + styles.BoardBoundary}/>
   } else if (block == Block.Path) {
     elem = <div className={styles.checkbox + ' ' + styles.blockPath}/>
   } else if (block == Block.Start) {
@@ -190,10 +191,11 @@ function BlockDrawableDiv({block, index}: BlockDrawableDivInput) {
       setBoardList(boardList)
     }
   }
-
   let classname: string = '';
   if (block == Block.Wall) {
     classname = styles.checkbox + ' ' + styles.blockWall
+  } else if (block == Block.BoardBoundary) {
+    classname = styles.checkbox + ' ' + styles.BoardBoundary
   } else if (block == Block.Path) {
     classname = styles.checkbox + ' ' + styles.blockPath
   } else if (block == Block.Start) {

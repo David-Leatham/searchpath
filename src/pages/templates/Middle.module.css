@@ -36,6 +36,25 @@
 .orangeBlue {}
 .dark {}
 
+.BoardBoundary {
+  background: #1eb8cd;
+  transition: None;
+  /* transform: rotate(90deg); */
+}
+
+.orangeBlue .BoardBoundary {
+  background: #2a3132;
+}
+
+.dark .BoardBoundary {
+  background: #07325b;
+}
+
+.noWalls .BoardBoundary {
+  background-color: rgb(199, 205, 215);
+}
+
+
 .blockWall {
   background: #1eb8cd;
   transition: None;
