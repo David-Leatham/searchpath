@@ -1,6 +1,11 @@
 
 // Board Types
 
+export interface Position {
+  x: number;
+  y: number;
+}
+
 export enum Block {
   BoardBoundary,
 	Wall,
