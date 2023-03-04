@@ -3,7 +3,7 @@ import { MazeAlgorithmInfoList, MazeAlgorithm } from '@/lib/types';
 
 import kruskal from './algorithms/kruskal'
 import empty from './algorithms/empty'
-import recursiveDivision from './algorithms/recursive_division'
+import recursiveDivision from './algorithms/recursiveDivision'
 
 
 
