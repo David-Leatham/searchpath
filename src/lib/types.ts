@@ -1,3 +1,8 @@
+// Equality checks
+
+export function isEqual(pos1: Position, pos2: Position): boolean {
+  return pos1.heightCoord === pos2.heightCoord;
+}
 
 // Board Types
 
