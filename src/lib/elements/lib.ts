@@ -15,36 +15,40 @@ const inter = Inter({ subsets: ['latin'] })
 
 let searchAlgPromise: Promise<void>;
 
-export function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorithm, searchAlgorithmInfoList: SearchAlgorithmInfoList) {
+export function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorithm, searchAlgorithmInfoList: SearchAlgorithmInfoList, setBoardList: (board: Array<Block>) => void) {
   return async function () {
     // First clear the board
     
     setSearchAlgorithmStopRunning(true);
     if (getSearchAlgorithmRunning()) {
-      clear(boardList);
+      clear(boardList, setBoardList);
       await searchAlgPromise;
       await sleep(100);
     }
     // Then start a new search itteration
-    searchAlgPromise = startSeach(boardList, searchAlgorithm, searchAlgorithmInfoList);
+    searchAlgPromise = startSeach(boardList, searchAlgorithm, searchAlgorithmInfoList, setBoardList);
   }
 }
 
-export function clear(boardList: Board) {
+export function clear(boardList: Board, setBoardList: (board: Array<Block>) => void) {
   setSearchAlgorithmStopRunning(true);
-  let middleDiv = document.getElementsByClassName(middleStyles.middle)[0]
+  // let middleDiv = document.getElementsByClassName(middleStyles.middle)[0]
   for (let i=0; i < boardList.boardList.length; i++) {
-    if (boardList.boardList[i] == Block.Path) {
-      let tmp = middleDiv.children.item(i) as HTMLElement
-      if (tmp) {
-        tmp.style.background = ''
-              tmp.style.transform = 'rotate(0deg)';
-      }
+    if (boardList.boardList[i] == Block.AlgSearched) {
+      boardList.boardList[i] = Block.Path
+      setBoardList(boardList.boardList)
+      // let tmp = middleDiv.children.item(i) as HTMLElement
+      // if (tmp) {
+      //   tmp.style.background = ''
+      //         tmp.style.transform = 'rotate(0deg)';
+      // }
     }
   }
 }
 
-async function startSeach(board: Board, searchAlgorithm: SearchAlgorithm, searchAlgorithmInfoList: SearchAlgorithmInfoList) {
+async function startSeach(board: Board, searchAlgorithm: SearchAlgorithm, searchAlgorithmInfoList: SearchAlgorithmInfoList, setBoardList: (board: Array<Block>) => void) {
+  if (getSlowMazeAlgorithmRunning()) { return }
+  
   // Get the correct algorithm
   let searchAlgorithmInfo: null | SearchAlgorithmInfo = null;
   for (let algoInfo of searchAlgorithmInfoList) {
@@ -66,14 +70,18 @@ async function startSeach(board: Board, searchAlgorithm: SearchAlgorithm, search
       stop = true;
       break
     }
-		let elem = document.getElementsByClassName(middleStyles.middle)[0].children.item(searchpath.searchList[index]) as HTMLElement
+		// let elem = document.getElementsByClassName(middleStyles.middle)[0].children.item(searchpath.searchList[index]) as HTMLElement
 		if (board.boardList[searchpath.searchList[index]] == Block.Path) {
-			let r = scale(startRGBColor[0], endRGBColor[0], index / searchpath.searchList.length);
-			let g = scale(startRGBColor[1], endRGBColor[1], index / searchpath.searchList.length);
-			let b = scale(startRGBColor[2], endRGBColor[2], index / searchpath.searchList.length);
-      elem.style.transition = 'transform 300ms, background-color 300ms linear';
-			elem.style.background = 'rgb(' + r + ',' + g + ',' + b + ')';
-			elem.style.transform = 'rotate(90deg)';
+		// 	let r = scale(startRGBColor[0], endRGBColor[0], index / searchpath.searchList.length);
+		// 	let g = scale(startRGBColor[1], endRGBColor[1], index / searchpath.searchList.length);
+		// 	let b = scale(startRGBColor[2], endRGBColor[2], index / searchpath.searchList.length);
+    //   elem.style.transition = 'transform 300ms, background-color 300ms linear';
+		// 	elem.style.background = 'rgb(' + r + ',' + g + ',' + b + ')';
+		// 	elem.style.transform = 'rotate(90deg)';
+
+    
+      board.boardList[searchpath.searchList[index]] = Block.AlgSearched
+      setBoardList(board.boardList)
 			await sleep(50)
 		}
 	}
@@ -82,15 +90,20 @@ async function startSeach(board: Board, searchAlgorithm: SearchAlgorithm, search
       setSearchAlgorithmRunning(false);
       break
     }
-		let elem = document.getElementsByClassName(middleStyles.middle)[0].children.item(index) as HTMLElement
-		if (board.boardList[index] == Block.Path) {
+		// let elem = document.getElementsByClassName(middleStyles.middle)[0].children.item(index) as HTMLElement
+		if (board.boardList[index] == Block.AlgSearched) {
 			// elem.classList.add("blockShortestPath")
-      elem.style.transition = 'transform 300ms, background-color 300ms linear';
-			elem.style.background = '#D09683';
-			elem.style.transform = 'rotate(' + 0 + 'deg)';
+      // elem.style.transition = 'transform 300ms, background-color 300ms linear';
+			// elem.style.background = '#D09683';
+			// elem.style.transform = 'rotate(' + 0 + 'deg)';
+
+      board.boardList[index] = Block.AlgSolutionPath
+      setBoardList(board.boardList)
 			await sleep(50)
 		}
 	}
+
+
 	// rotationDeg += 90;
 	// elem.style.transition = 'red 1000ms linear';
 }
@@ -160,7 +173,7 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
           }
           setBoardList(boardList);
         }
-        
+
         await sleep(timePerPrint);
       }
     } else {

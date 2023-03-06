@@ -78,6 +78,7 @@ export default function Middle() {
 
   useEffect(() => {
     if (genSlow) {
+      setSearchAlgorithmStopRunning(true);
       StartSlowMazeGeneration(mazeAlgorithm, mazeAlgorithmInfoList, boardSize, setBoardList);
     }
     setgenSlow(false)
@@ -92,6 +93,7 @@ export default function Middle() {
     if (lastBoardSize.current[0] != boxCount[0] || lastBoardSize.current[1] != boxCount[1]) {
 
       lastBoardSize.current = boxCount
+      setSearchAlgorithmStopRunning(true);
       setSlowMazeAlgorithmStartRunning(true);
       rerenderBoard(boxCount, slowMazeState);
     }
@@ -153,8 +155,6 @@ export default function Middle() {
 }
 
 function newBoardGenAndgetBoardDivList(boardList: Array<Block>, mazeAlgorithm: MazeAlgorithm): JSX.Element[]  {
-  setSearchAlgorithmStopRunning(true);
-
   let drawable = mazeAlgorithm == MazeAlgorithm.Empty;
   let divList: Array<JSX.Element> = [];
 
