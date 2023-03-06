@@ -28,12 +28,15 @@ export function StartSearchButton() {
   const boardList = useBoardListStore<Array<Block>>((state)=>state.boardList)
 	const board: Board = {height: boardSize.height, width: boardSize.width, boardList: boardList}
   const setBoardList = useBoardListStore((state)=>{return (board: Array<Block>) => {state.setBoardList(board)}});
+	const slowMazeState: boolean = useSlowMazeStateStore<boolean>((state)=>state.slowMazeState);
+  const mazeAlgorithm: MazeAlgorithm = useMazeAlgorithmsStore<MazeAlgorithm>((state)=>state.mazeAlgorithm);
+  const mazeAlgorithmInfoList: MazeAlgorithmInfoList = useMazeAlgorithmsStore<MazeAlgorithmInfoList>((state)=>state.mazeAlgorithmInfoList);
 
   // const algRunning: boolean = useBoardStore<boolean>((state)=>state.algRunning);
   const searchAlgorithm: SearchAlgorithm = useSearchAlgorithmsStore<SearchAlgorithm>((state)=>state.searchAlgorithm);
   const searchAlgorithmInfoList: SearchAlgorithmInfoList = useSearchAlgorithmsStore<SearchAlgorithmInfoList>((state)=>state.searchAlgorithmInfoList);
   return (
-    <a className={settingsStripStyles.button + ' ' + inter.className} onClick={StartNewSearch(board, searchAlgorithm, searchAlgorithmInfoList, setBoardList)}>Start</a>
+    <a className={settingsStripStyles.button + ' ' + inter.className} onClick={StartNewSearch(board, searchAlgorithm, searchAlgorithmInfoList, setBoardList, slowMazeState, mazeAlgorithm, mazeAlgorithmInfoList)}>Start</a>
   )
 }
 
@@ -42,9 +45,13 @@ export function ClearSearchButton() {
   const boardList = useBoardListStore<Array<Block>>((state)=>state.boardList)
 	const board: Board = {height: boardSize.height, width: boardSize.width, boardList: boardList}
   const setBoardList = useBoardListStore((state)=>{return (board: Array<Block>) => {state.setBoardList(board)}});
+	const slowMazeState: boolean = useSlowMazeStateStore<boolean>((state)=>state.slowMazeState);
+  const mazeAlgorithm: MazeAlgorithm = useMazeAlgorithmsStore<MazeAlgorithm>((state)=>state.mazeAlgorithm);
+  const mazeAlgorithmInfoList: MazeAlgorithmInfoList = useMazeAlgorithmsStore<MazeAlgorithmInfoList>((state)=>state.mazeAlgorithmInfoList);
+
 	// const board: Board = useBoardStore<Board>((state)=>state.board);
   return (
-    <a className={settingsStripStyles.button + ' ' + inter.className} onClick={()=>{clear(board, setBoardList)}}>Clear</a>
+    <a className={settingsStripStyles.button + ' ' + inter.className} onClick={()=>{clear(board, setBoardList, slowMazeState, mazeAlgorithm, mazeAlgorithmInfoList)}}>Clear</a>
   )
 }
 

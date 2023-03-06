@@ -30,6 +30,8 @@ export default function Middle() {
 
   const generateMazeState: boolean = useGenerateMazeStateStore<boolean>((state)=>state.generateMazeState);
 	const slowMazeState: boolean = useSlowMazeStateStore<boolean>((state)=>state.slowMazeState);
+
+  const toggleGenerateMazeState = useGenerateMazeStateStore((state)=>{return state.toggleGenerateMazeState });  
   // const generateMazeState: boolean = false;
 	// const slowMazeState: boolean = false;
 
@@ -44,6 +46,12 @@ export default function Middle() {
   const slowMazeStateRef = useRef<boolean>(slowMazeState);
   useEffect(() => {
     slowMazeStateRef.current = slowMazeState
+    if (slowMazeState) {
+      toggleGenerateMazeState()
+    } else {
+      setSlowMazeAlgorithmStopRunning(true);
+      rerenderBoard(lastBoardSize.current, slowMazeStateRef);
+    }
   }, [slowMazeState])
 
   const mazeAlgorithmStateRef = useRef<MazeAlgorithm | null>(null);
@@ -51,18 +59,17 @@ export default function Middle() {
 
   const [resizeBoardElement, setResizeBoardElement] = useState<null | HTMLElement>(null);
 
-  const rerenderBoard = (boardSize: Array<number>, slowMazeState: boolean) => {
-    let mazeAlgorithmTmp: null | MazeAlgorithm;
-    if (slowMazeState) {
-      return
-      // mazeAlgorithmTmp = MazeAlgorithm.Empty;
-    } else {
-      mazeAlgorithmTmp = mazeAlgorithmStateRef.current;
-    }
+  const rerenderBoard = (boardSize: Array<number>, slowMazeStateRef: React.MutableRefObject<boolean>) => {
+    // let mazeAlgorithmTmp: null | MazeAlgorithm;
+    // if (slowMazeState) {
+    //   mazeAlgorithmTmp = MazeAlgorithm.Empty;
+    // } else {
+    //   mazeAlgorithmTmp = mazeAlgorithmStateRef.current;
+    // }
       
     let mazeAlgClass: null | MazeAlgAbstract = null;
     for (let mazeAlgorithmInfo of mazeAlgorithmInfoList) {
-      if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithmTmp) {
+      if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithmStateRef.current) {
         mazeAlgClass = mazeAlgorithmInfo.algorithm;
       }
     }
@@ -70,7 +77,15 @@ export default function Middle() {
     if (mazeAlgClass) {
       // lastBoardSize = boxCount
       setBoardSize(boardSize);
-      let boardElements = mazeAlgClass.generateMaze(boardSize[0], boardSize[1])
+      let boardElements: Array<Block> | null = null;
+      if (slowMazeStateRef.current) {
+        boardElements = mazeAlgClass.getMazeBase(boardSize[0], boardSize[1])
+      }
+
+      if (boardElements === null) {
+        boardElements = mazeAlgClass.generateMaze(boardSize[0], boardSize[1])
+      }
+
       setBoardList(boardElements);
     }
 
@@ -94,8 +109,15 @@ export default function Middle() {
 
       lastBoardSize.current = boxCount
       setSearchAlgorithmStopRunning(true);
-      setSlowMazeAlgorithmStartRunning(true);
-      rerenderBoard(boxCount, slowMazeState);
+      setSlowMazeAlgorithmStopRunning(true);
+      // setSlowMazeAlgorithmStartRunning(true);
+      
+      // if (slowMazeState) {
+      //   toggleGenerateMazeState();
+      // } else {
+      rerenderBoard(boxCount, slowMazeStateRef);
+      toggleGenerateMazeState();
+      // }
     }
   }, []);
 
@@ -114,10 +136,10 @@ export default function Middle() {
       setgenSlow(true)
 
     } else {
-      rerenderBoard(boardSize, slowMazeState);
+      rerenderBoard(boardSize, slowMazeStateRef);
 
     }
-  }, [mazeAlgorithm, generateMazeState])
+  }, [mazeAlgorithm, generateMazeState, slowMazeStateRef])
 
   useEffect(() => {
       if (resizeBoardElement) {

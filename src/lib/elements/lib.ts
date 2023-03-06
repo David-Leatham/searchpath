@@ -15,13 +15,13 @@ const inter = Inter({ subsets: ['latin'] })
 
 let searchAlgPromise: Promise<void>;
 
-export function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorithm, searchAlgorithmInfoList: SearchAlgorithmInfoList, setBoardList: (board: Array<Block>) => void) {
+export function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorithm, searchAlgorithmInfoList: SearchAlgorithmInfoList, setBoardList: (board: Array<Block>) => void, slowMazeState: boolean, mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList) {
   return async function () {
     // First clear the board
     
     setSearchAlgorithmStopRunning(true);
     if (getSearchAlgorithmRunning()) {
-      clear(boardList, setBoardList);
+      clear(boardList, setBoardList, slowMazeState, mazeAlgorithm, mazeAlgorithmInfoList);
       await searchAlgPromise;
       await sleep(100);
     }
@@ -30,18 +30,24 @@ export function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorith
   }
 }
 
-export function clear(boardList: Board, setBoardList: (board: Array<Block>) => void) {
+export function clear(boardList: Board, setBoardList: (board: Array<Block>) => void, slowMazeState: boolean, mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList) {
   setSearchAlgorithmStopRunning(true);
-  // let middleDiv = document.getElementsByClassName(middleStyles.middle)[0]
-  for (let i=0; i < boardList.boardList.length; i++) {
-    if (boardList.boardList[i] == Block.AlgSearched) {
-      boardList.boardList[i] = Block.Path
-      setBoardList(boardList.boardList)
-      // let tmp = middleDiv.children.item(i) as HTMLElement
-      // if (tmp) {
-      //   tmp.style.background = ''
-      //         tmp.style.transform = 'rotate(0deg)';
-      // }
+  setSlowMazeAlgorithmStopRunning(true);
+
+  if (slowMazeState) {
+    setEmptyMaze(mazeAlgorithm, mazeAlgorithmInfoList, [boardList.height, boardList.width], setBoardList);
+  } else {
+    // let middleDiv = document.getElementsByClassName(middleStyles.middle)[0]
+    for (let i=0; i < boardList.boardList.length; i++) {
+      if (boardList.boardList[i] == Block.AlgSearched || boardList.boardList[i] == Block.AlgSolutionPath) {
+        boardList.boardList[i] = Block.Path
+        setBoardList(boardList.boardList)
+        // let tmp = middleDiv.children.item(i) as HTMLElement
+        // if (tmp) {
+        //   tmp.style.background = ''
+        //         tmp.style.transform = 'rotate(0deg)';
+        // }
+      }
     }
   }
 }
@@ -124,6 +130,51 @@ export async function StartSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, maze
 }
 
 async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList, boardSize: Array<number>, setBoardList: (board: Array<Block>) => void) {
+  let [mazeAlgorithmClass, boardList] = setEmptyMaze(mazeAlgorithm, mazeAlgorithmInfoList, boardSize, setBoardList);
+  if (mazeAlgorithmClass === null || boardList === null) {
+    return
+  }
+
+  setSlowMazeAlgorithmRunning(true);
+
+  let boardMazeChanges = mazeAlgorithmClass.getMazeChanges(boardSize[0], boardSize[1]);
+  if (boardMazeChanges !== null) {
+    let toalTime = 13000 + 20 * boardMazeChanges.length; // 13 seconds + 0.02 seconds for every print
+    let timePerPrint = toalTime / boardMazeChanges.length;
+
+    for (let boardMazeChangeSection of boardMazeChanges) {
+      if (getSlowMazeAlgorithmStopRunning()) { break }
+
+      for (let mazeChangeBlock of boardMazeChangeSection) {
+        if (getSlowMazeAlgorithmStopRunning()) { break }
+
+        let blockToOverwrite = boardList[mazeChangeBlock.position];
+        
+        if (blockToOverwrite != Block.BoardBoundary && blockToOverwrite != Block.Start && blockToOverwrite != Block.Finish) {
+          boardList[mazeChangeBlock.position] = mazeChangeBlock.block
+        }
+        setBoardList(boardList);
+      }
+
+      await sleep(timePerPrint);
+    }
+  } else {
+    let boardElements = mazeAlgorithmClass.generateMaze(boardSize[0], boardSize[1]);
+    
+    for (let i=0; i < boardElements.length; i++) {
+      if (getSlowMazeAlgorithmStopRunning()) { break }
+
+      if (boardElements[i] == Block.Wall) {
+        boardList[i] = Block.Wall
+        setBoardList(boardList);
+        await sleep(50);
+      }
+    }
+  }
+  setSlowMazeAlgorithmRunning(false);
+}
+
+function setEmptyMaze(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList, boardSize: Array<number>, setBoardList: (board: Array<Block>) => void): [null | MazeAlgAbstract, null | Array<Block>] {
   let mazeAlgorithmClass: null | MazeAlgAbstract = null;
   for (let mazeAlgorithmInfo of mazeAlgorithmInfoList) {
     if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithm) {
@@ -131,9 +182,10 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
     }
   }
 
+  let emptyMaze: null | Array<Block> = null;
   if (mazeAlgorithmClass) {
     setSlowMazeAlgorithmRunning(true);
-    let emptyMaze = mazeAlgorithmClass.getMazeBase(boardSize[0], boardSize[1]);
+    emptyMaze = mazeAlgorithmClass.getMazeBase(boardSize[0], boardSize[1]);
 
     if (emptyMaze === null) {
       let mazeAlgorithmClassEmpty: null | MazeAlgAbstract = null;
@@ -149,48 +201,9 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
 
     if (emptyMaze !== null) {
       setBoardList(emptyMaze);
-    } else {
-      return
     }
-
-    let boardList = emptyMaze;
-
-    let boardMazeChanges = mazeAlgorithmClass.getMazeChanges(boardSize[0], boardSize[1]);
-    if (boardMazeChanges !== null) {
-      let toalTime = 13000 + 20 * boardMazeChanges.length; // 13 seconds + 0.02 seconds for every print
-      let timePerPrint = toalTime / boardMazeChanges.length;
-
-      for (let boardMazeChangeSection of boardMazeChanges) {
-        if (getSlowMazeAlgorithmStopRunning()) { break }
-
-        for (let mazeChangeBlock of boardMazeChangeSection) {
-          if (getSlowMazeAlgorithmStopRunning()) { break }
-
-          let blockToOverwrite = boardList[mazeChangeBlock.position];
-          
-          if (blockToOverwrite != Block.BoardBoundary && blockToOverwrite != Block.Start && blockToOverwrite != Block.Finish) {
-            boardList[mazeChangeBlock.position] = mazeChangeBlock.block
-          }
-          setBoardList(boardList);
-        }
-
-        await sleep(timePerPrint);
-      }
-    } else {
-      let boardElements = mazeAlgorithmClass.generateMaze(boardSize[0], boardSize[1]);
-      
-      for (let i=0; i < boardElements.length; i++) {
-        if (getSlowMazeAlgorithmStopRunning()) { break }
-
-        if (boardElements[i] == Block.Wall) {
-          boardList[i] = Block.Wall
-          setBoardList(boardList);
-          await sleep(50);
-        }
-      }
-    }
-    setSlowMazeAlgorithmRunning(false);
   }
+  return [mazeAlgorithmClass, emptyMaze]
 }
 
 function scale(first: number, second: number, percent: number) {
