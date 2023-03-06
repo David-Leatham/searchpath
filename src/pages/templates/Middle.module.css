@@ -98,3 +98,9 @@
 .dark .blockFinish {
   background: #704b1e;
 }
+
+.blockAlgSaving {
+  transition: transform 300ms, background-color 300ms linear;
+  background: rgb(249, 79, 32);
+  transform: rotate(90deg);
+}

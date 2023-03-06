@@ -1,4 +1,4 @@
-import { Block } from '../types'
+import { Block, Position } from '../types'
 
 export function nothin() {}
 
@@ -36,7 +36,7 @@ export function innerPathArrayToOut(width: number, height: number, grid: Array<A
 
 
 export function getRandomInt(min: number, max: number, even: boolean = false, odd: boolean = false) {
-  // The maximum and the minimum are inclusive
+  // The maximum not and the minimum included
   min = Math.ceil(min);
   max = Math.floor(max);
   if (max - min <= 1) {
@@ -59,4 +59,8 @@ export function getRandomInt(min: number, max: number, even: boolean = false, od
   return out
 
   // return Math.floor(Math.random() * (max - min) + min); 
+}
+
+export function flatten(position: Position, height: number, width: number): number {
+  return (position.widthCoord + 1) + (width + 2) * (position.heightCoord + 1)
 }

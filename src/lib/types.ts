@@ -16,7 +16,8 @@ export enum Block {
 	Wall,
 	Path,
 	Start,
-	Finish
+	Finish,
+  AlgSaving
 }
 
 export interface Board {
@@ -27,10 +28,26 @@ export interface Board {
 
 export interface BoardState {
   board: Board;
-  algRunning: boolean;
-  setAlgRunning: (bool: boolean) => void;
+  // algRunning: boolean;
+  // setAlgRunning: (bool: boolean) => void;
   setHeight: (height: number) => void;
   setWidth: (width: number) => void;
+  setBoardList: (boardList: Array<Block>) => void;
+}
+
+export interface BoardSize {
+  height: number;
+  width: number;
+}
+
+export interface BoardSizeState {
+  boardSize: BoardSize;
+  setHeight: (height: number) => void;
+  setWidth: (width: number) => void;
+}
+
+export interface BoardListState {
+  boardList: Array<Block>;
   setBoardList: (boardList: Array<Block>) => void;
 }
 
@@ -65,7 +82,7 @@ export interface SearchAlgorithmState {
 // Mazre Algorithm Types
 
 export enum MazeAlgorithm {
-  Kruskal,
+  // Kruskal,
   Empty,
   RecursiveDivision,
   RecursiveBacktracking
@@ -74,7 +91,8 @@ export enum MazeAlgorithm {
 export interface MazeAlgorithmInfo {
   mazeAlgorithm: MazeAlgorithm,
   name: string,
-  algorithm: (height: number, width: number) => Array<Block>
+  // algorithm: (height: number, width: number) => Array<Block>
+  algorithm: MazeAlgAbstract
 }
 
 export type MazeAlgorithmInfoList = Array<MazeAlgorithmInfo>;
@@ -90,6 +108,13 @@ export interface MazeAlgorithmState {
 export interface SlowMazeState {
   slowMazeState: boolean,
   toggleSlowMazeState: () => void,
+}
+
+// Generate Maze Toggle
+
+export interface GenerateMazeState {
+  generateMazeState: boolean,
+  toggleGenerateMazeState: () => void,
 }
 
 // Style types
@@ -111,4 +136,29 @@ export interface StyleState {
   style: Style,
   styleInfoList: StyleInfoList,
   setStyle: (style: Style) => void,
+}
+
+
+// Maze Algorithm
+export interface MazeChangeBlock {
+  block: Block;
+  position: number;
+}
+
+export abstract class MazeAlgAbstract {
+  height: number;
+  width: number;
+  constructor () {
+    this.height = 0;
+    this.width = 0;
+  }
+
+  abstract generateMaze(height: number, width: number): Array<Block>;
+  abstract getMazeBase(height: number, width: number): Array<Block> | null;
+  abstract getMazeChanges(height: number, width: number): Array<Array<MazeChangeBlock>> | null;
+
+  setHeightWidth(height: number, width: number) {
+    this.height = height;
+    this.width = width;
+  }
 }

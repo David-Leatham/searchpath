@@ -1,13 +1,14 @@
 import { Inter } from '@next/font/google';
 import settingsStripStyles from '@/pages/templates/settings/SettingsStrip.module.css';
-import { StartNewSearch, clear, getClassNameSearch, getClassNameMaze, getClassNameStyle } from './lib';
+import { StartNewSearch, clear, getClassNameSearch, getClassNameMaze, getClassNameStyle, StartSlowMazeGeneration } from './lib';
 
-import { Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo, MazeAlgorithm, MazeAlgorithmInfoList, MazeAlgorithmInfo, StyleInfoList, StyleInfo, Style } from '@/lib/types';
-import { useBoardStore } from "@/lib/store/boardStore";
+import { Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo, MazeAlgorithm, MazeAlgorithmInfoList, MazeAlgorithmInfo, StyleInfoList, StyleInfo, Style, BoardSize, Block } from '@/lib/types';
+import { useBoardSizeStore, useBoardListStore } from "@/lib/store/boardStore";
 import { useSearchAlgorithmsStore } from '@/lib/store/searchAlgorithmsStore';
 import { useMazeAlgorithmsStore } from '@/lib/store/mazeAlgorithmsStore';
 import { useStyleStore } from '@/lib/store/styleStore';
 import { useSlowMazeStateStore } from '@/lib/store/slowMazeStateStore';
+import { useGenerateMazeStateStore } from '@/lib/store/generateMazeStateStore';
 
 import classNames from 'classnames';
 
@@ -23,19 +24,31 @@ export function Title({title}: TitleProps) {
 
 
 export function StartSearchButton() {
-	const boardList: Board = useBoardStore<Board>((state)=>state.board);
+  const boardSize = useBoardSizeStore<BoardSize>((state)=>state.boardSize)
+  const boardList = useBoardListStore<Array<Block>>((state)=>state.boardList)
+	const board: Board = {height: boardSize.height, width: boardSize.width, boardList: boardList}
   // const algRunning: boolean = useBoardStore<boolean>((state)=>state.algRunning);
   const searchAlgorithm: SearchAlgorithm = useSearchAlgorithmsStore<SearchAlgorithm>((state)=>state.searchAlgorithm);
   const searchAlgorithmInfoList: SearchAlgorithmInfoList = useSearchAlgorithmsStore<SearchAlgorithmInfoList>((state)=>state.searchAlgorithmInfoList);
   return (
-    <a className={settingsStripStyles.button + ' ' + inter.className} onClick={StartNewSearch(boardList, searchAlgorithm, searchAlgorithmInfoList)}>Start</a>
+    <a className={settingsStripStyles.button + ' ' + inter.className} onClick={StartNewSearch(board, searchAlgorithm, searchAlgorithmInfoList)}>Start</a>
   )
 }
 
-export function ClearSearchButten() {
-	const boardList: Board = useBoardStore<Board>((state)=>state.board);
+export function ClearSearchButton() {
+  const boardSize = useBoardSizeStore<BoardSize>((state)=>state.boardSize)
+  const boardList = useBoardListStore<Array<Block>>((state)=>state.boardList)
+	const board: Board = {height: boardSize.height, width: boardSize.width, boardList: boardList}
+	// const board: Board = useBoardStore<Board>((state)=>state.board);
   return (
-    <a className={settingsStripStyles.button + ' ' + inter.className} onClick={()=>{clear(boardList)}}>Clear</a>
+    <a className={settingsStripStyles.button + ' ' + inter.className} onClick={()=>{clear(board)}}>Clear</a>
+  )
+}
+
+export function GenerateMazeButton() {
+  const toggleGenerateMazeState = useGenerateMazeStateStore((state)=>{return state.toggleGenerateMazeState });  
+  return (
+    <a className={settingsStripStyles.button + ' ' + inter.className} onClick={toggleGenerateMazeState}>Generate Maze</a>
   )
 }
 

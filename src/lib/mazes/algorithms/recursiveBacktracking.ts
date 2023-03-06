@@ -1,36 +1,53 @@
-import { Block, Position, isEqual } from '@/lib/types'
-import { getInnerPathArray, innerPathArrayAddStartFinish, innerPathArrayToOut} from '../helpers'
+import { Block, Position, isEqual, MazeAlgAbstract, MazeChangeBlock } from '@/lib/types'
+import { getInnerPathArray, innerPathArrayAddStartFinish, innerPathArrayToOut, flatten } from '../helpers'
 
-export default function recursiveBacktracking(height: number, width: number): Array<Block> {
-  let grid = getInnerPathArray(Block.Wall, height, width);
-  if (!grid) {return []}
 
-  rBImplementatoin({heightCoord:0, widthCoord:0}, [], [], grid, height-2, width-2);
+export default class RecursiveBacktracking extends MazeAlgAbstract {
+  generateMaze(height: number, width: number) { return this.recursiveBacktracking(height, width)[0] }
+  getMazeBase(height: number, width: number) {
+    let grid = getInnerPathArray(Block.Wall, height, width);
+    if (!grid) {return []}
 
-  fillSides(grid, height-2, width-2)
+    innerPathArrayAddStartFinish(grid);
+    return innerPathArrayToOut(width, height, grid);
+  }
+  getMazeChanges(height: number, width: number) { return this.recursiveBacktracking(height, width)[1] }
 
-  innerPathArrayAddStartFinish(grid);
-  return innerPathArrayToOut(width, height, grid);
-}
-
-function rBImplementatoin(position: Position, visited: Array<Position>, visitedNoNeighbors: Array<Position>, grid: Array<Array<Block>>, height: number, width: number): void {
-  let neighborsAr = neighbors(position, visited, visitedNoNeighbors, height, width);
-  if (!neighborsAr.length) {
-    visitedNoNeighbors.push(position)
-
-    let newPosition = visited.pop()
-    if (newPosition) {
-      rBImplementatoin(newPosition, visited, visitedNoNeighbors, grid, height, width)
-    }
-    return 
+  recursiveBacktracking(height: number, width: number): [Array<Block>, Array<Array<MazeChangeBlock>>] {
+    let grid = getInnerPathArray(Block.Wall, height, width);
+    if (!grid) {return [[], []]}
+  
+    let mazeChanges: Array<Array<MazeChangeBlock>> = []
+    this.rBImplementatoin({heightCoord:0, widthCoord:0}, [], [], mazeChanges, grid, height-2, width-2);
+  
+    fillSides(grid, height-2, width-2)
+  
+    innerPathArrayAddStartFinish(grid);
+    return [innerPathArrayToOut(width, height, grid), mazeChanges];
   }
 
-  let nextPosition = neighborsAr[Math.floor(Math.random()*neighborsAr.length)];
-  walkToPosition(position, nextPosition, grid);
+  rBImplementatoin(position: Position, visited: Array<Position>, visitedNoNeighbors: Array<Position>, mazeChanges: Array<Array<MazeChangeBlock>>, grid: Array<Array<Block>>, height: number, width: number): void {
+    let neighborsAr = neighbors(position, visited, visitedNoNeighbors, height, width);
+    if (!neighborsAr.length) {
+      visitedNoNeighbors.push(position)
 
-  visited.push(position)
+      let newPosition = visited.pop()
+      if (newPosition) {
+        walkBackFromPosition(position, newPosition, mazeChanges, grid, height, width);
+        this.rBImplementatoin(newPosition, visited, visitedNoNeighbors, mazeChanges, grid, height, width)
+      } else {
+        mazeChanges.push([{block: Block.Path, position: flatten(position, height, width)}])
+      }
+      return 
+    }
   
-  rBImplementatoin(nextPosition, visited, visitedNoNeighbors, grid, height, width)
+    let nextPosition = neighborsAr[Math.floor(Math.random()*neighborsAr.length)];
+    walkToPosition(position, nextPosition, mazeChanges, grid, height, width);
+  
+    visited.push(position)
+    
+    this.rBImplementatoin(nextPosition, visited, visitedNoNeighbors, mazeChanges, grid, height, width)
+  }
 }
 
 function neighbors(position: Position, visited: Array<Position>, visitedNoNeighbors: Array<Position>, height: number, width: number): Array<Position> {
@@ -65,39 +82,71 @@ function neighbors(position: Position, visited: Array<Position>, visitedNoNeighb
 function fillSides(grid: Array<Array<Block>>, height: number, width: number): void {
   if (width % 2 == 0) {
     let fillPosition = 0
-    while (fillPosition < width) {
+    while (fillPosition < height) {
       grid[fillPosition][width-1] = Block.Path
       fillPosition += 2
     }
   }
   if (height % 2 == 0) {
     let fillPosition = 0
-    while (fillPosition < height) {
+    while (fillPosition < width) {
       grid[height-1][fillPosition] = Block.Path
       fillPosition += 2
     }
   }
 }
 
-function walkToPosition(currPos: Position, nextPos: Position, grid: Array<Array<Block>>) {
+function walkToPosition(currPos: Position, nextPos: Position, mazeChanges: Array<Array<MazeChangeBlock>>, grid: Array<Array<Block>>, height: number, width: number) {
   if (currPos.heightCoord != nextPos.heightCoord) {
     if (currPos.heightCoord > nextPos.heightCoord) {
       for (let pos = currPos.heightCoord - 1; pos >= nextPos.heightCoord; pos--) {
         grid[pos][currPos.widthCoord] = Block.Path
+        mazeChanges.push([{block: Block.AlgSaving, position: flatten({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)}])
       }
     } else {
       for (let pos = currPos.heightCoord + 1; pos <= nextPos.heightCoord; pos++) {
         grid[pos][currPos.widthCoord] = Block.Path
+        mazeChanges.push([{block: Block.AlgSaving, position: flatten({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)}])
       }
     }
   } else if (currPos.widthCoord != nextPos.widthCoord) {
     if (currPos.widthCoord > nextPos.widthCoord) {
       for (let pos = currPos.widthCoord - 1; pos >= nextPos.widthCoord; pos--) {
         grid[currPos.heightCoord][pos] = Block.Path
+        mazeChanges.push([{block: Block.AlgSaving, position: flatten({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)}])
       }
     } else {
       for (let pos = currPos.widthCoord + 1; pos <= nextPos.widthCoord; pos++) {
         grid[currPos.heightCoord][pos] = Block.Path
+        mazeChanges.push([{block: Block.AlgSaving, position: flatten({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)}])
+      }
+    }
+  }
+}
+
+function walkBackFromPosition(currPos: Position, nextPos: Position, mazeChanges: Array<Array<MazeChangeBlock>>, grid: Array<Array<Block>>, height: number, width: number) {
+  if (currPos.heightCoord != nextPos.heightCoord) {
+    if (currPos.heightCoord > nextPos.heightCoord) {
+      for (let pos = currPos.heightCoord; pos > nextPos.heightCoord; pos--) {
+        grid[pos][currPos.widthCoord] = Block.Path
+        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)}])
+      }
+    } else {
+      for (let pos = currPos.heightCoord; pos < nextPos.heightCoord; pos++) {
+        grid[pos][currPos.widthCoord] = Block.Path
+        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)}])
+      }
+    }
+  } else if (currPos.widthCoord != nextPos.widthCoord) {
+    if (currPos.widthCoord > nextPos.widthCoord) {
+      for (let pos = currPos.widthCoord; pos > nextPos.widthCoord; pos--) {
+        grid[currPos.heightCoord][pos] = Block.Path
+        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)}])
+      }
+    } else {
+      for (let pos = currPos.widthCoord; pos < nextPos.widthCoord; pos++) {
+        grid[currPos.heightCoord][pos] = Block.Path
+        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)}])
       }
     }
   }
