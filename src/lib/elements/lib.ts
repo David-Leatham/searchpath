@@ -141,7 +141,7 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
 
     let boardMazeChanges = mazeAlgorithmClass.getMazeChanges(boardSize[0], boardSize[1]);
     if (boardMazeChanges !== null) {
-      let toalTime = 10000; // 23 seconds
+      let toalTime = 9000 + 40 * boardMazeChanges.length; // 9 seconds + 0.04 seconds for every print
       let timePerPrint = toalTime / boardMazeChanges.length;
 
       for (let boardMazeChangeSection of boardMazeChanges) {
