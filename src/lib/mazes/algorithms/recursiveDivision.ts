@@ -20,7 +20,6 @@ export default class RecursiveDivide extends MazeAlgAbstract {
   
     // innerPathArrayAddStartFinish(grid);
     grid[0][0] = Block.Start;
-    grid[0][1] = Block.Wall;
     grid[grid.length-1][grid[0].length-1] = Block.Finish
 
     // let out = innerPathArrayToOut(width, height, grid)
@@ -51,7 +50,6 @@ export default class RecursiveDivide extends MazeAlgAbstract {
   
     // innerPathArrayAddStartFinish(grid);
     grid[0][0] = Block.Start;
-    grid[0][1] = Block.Wall;
     grid[grid.length-1][grid[0].length-1] = Block.Finish
 
     // let out = innerPathArrayToOut(width, height, grid)
