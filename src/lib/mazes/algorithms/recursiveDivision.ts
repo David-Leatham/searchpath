@@ -13,14 +13,12 @@ export default class RecursiveDivide extends MazeAlgAbstract {
     }
     if (!grid) {return []}
 
-    // console.log(height, width)
     this.setHeightWidth(height-2, width-2);
   
     // let mazeChangeSave: Array<Array<MazeChangeBlock>> = [];
     // this.recursiveDivide(grid, mazeChangeSave, 0, height-2, 0, width-2)
   
     // innerPathArrayAddStartFinish(grid);
-    // console.log(grid)
     grid[0][0] = Block.Start;
     grid[0][1] = Block.Wall;
     grid[grid.length-1][grid[0].length-1] = Block.Finish
@@ -34,10 +32,7 @@ export default class RecursiveDivide extends MazeAlgAbstract {
     grid.unshift(new Array(height).fill(Block.BoardBoundary))
     grid.push(new Array(height).fill(Block.BoardBoundary))
 
-    let out: Array<number> = grid.flat(1);
-    // return out
-    // console.log(out)
-    return out;
+    return grid.flat(1);
   }
   getMazeChanges(height: number, width: number) { return this.recursiveDivideOut(height, width)[1] }
 
@@ -49,14 +44,12 @@ export default class RecursiveDivide extends MazeAlgAbstract {
     }
     if (!grid) {return [[], []]}
 
-    console.log(height, width)
     this.setHeightWidth(height-2, width-2);
   
     let mazeChangeSave: Array<Array<MazeChangeBlock>> = [];
     this.recursiveDivide(grid, mazeChangeSave, 0, height-2, 0, width-2)
   
     // innerPathArrayAddStartFinish(grid);
-    console.log(grid)
     grid[0][0] = Block.Start;
     grid[0][1] = Block.Wall;
     grid[grid.length-1][grid[0].length-1] = Block.Finish
@@ -71,8 +64,6 @@ export default class RecursiveDivide extends MazeAlgAbstract {
     grid.push(new Array(height).fill(Block.BoardBoundary))
 
     let out: Array<number> = grid.flat(1);
-    // return out
-    console.log(out)
     return [out, mazeChangeSave];
   }
 
