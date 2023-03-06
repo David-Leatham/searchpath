@@ -39,7 +39,7 @@
 .BoardBoundary {
   background: #1eb8cd;
   transition: None;
-  /* transform: rotate(90deg); */
+  transform: rotate(0deg);
 }
 
 .orangeBlue .BoardBoundary {
@@ -58,7 +58,7 @@
 .blockWall {
   background: #1eb8cd;
   transition: None;
-  /* transform: rotate(90deg); */
+  transform: rotate(0deg);
 }
 
 .orangeBlue .blockWall {
@@ -77,11 +77,13 @@
 
 .blockPath {
   transition: None;
-  background: rgb(144, 175, 197);
   transform: rotate(0deg);
+  background: rgb(144, 175, 197);
 }
 
 .blockStart {
+  transition: None;
+  transform: rotate(0deg);
   background: #29566c;
   /* transform: rotate(90deg); */
 }
@@ -91,8 +93,9 @@
 }
 
 .blockFinish {
+  transition: None;
+  transform: rotate(0deg);
   background: #29566c;
-  transform: rotate(90deg);
 }
 
 .dark .blockFinish {
@@ -103,4 +106,16 @@
   transition: transform 300ms, background-color 300ms linear;
   background: rgb(249, 79, 32);
   transform: rotate(90deg);
+}
+
+.blockAlgSearched {
+  transition: transform 300ms, background-color 300ms linear;
+  background: rgb(221, 162, 6);
+  transform: rotate(90deg);
+}
+
+.blockAlgSolutionPath {
+  transition: transform 300ms, background-color 300ms linear;
+  background: #D09683;
+  transform: rotate(0deg);
 }

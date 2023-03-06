@@ -192,6 +192,10 @@ function BlockDiv({block}: BlockDivProps) {
     elem = <div className={styles.checkbox + ' ' + styles.blockFinish}/>
   } else if (block == Block.AlgSaving) {
     elem = <div className={styles.checkbox + ' ' + styles.blockAlgSaving}/>
+  } else if (block == Block.AlgSearched) {
+    elem = <div className={styles.checkbox + ' ' + styles.blockAlgSearched}/>
+  } else if (block == Block.AlgSolutionPath) {
+    elem = <div className={styles.checkbox + ' ' + styles.blockAlgSolutionPath}/>
   } else {
     elem = <div className={styles.checkbox + ' ' + styles.blockFail}/>
   }
@@ -249,6 +253,10 @@ function BlockDrawableDiv({block, index}: BlockDrawableDivInput) {
     classname = styles.checkbox + ' ' + styles.blockFinish
   } else if (block == Block.AlgSaving) {
     classname = styles.checkbox + ' ' + styles.blockAlgSaving
+  } else if (block == Block.AlgSearched) {
+    classname = styles.checkbox + ' ' + styles.blockAlgSearched
+  } else if (block == Block.AlgSolutionPath) {
+    classname = styles.checkbox + ' ' + styles.blockAlgSolutionPath
   } else {
     classname = styles.checkbox + ' ' + styles.blockFail
   }
