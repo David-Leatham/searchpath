@@ -184,7 +184,6 @@ function setEmptyMaze(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeA
 
   let emptyMaze: null | Array<Block> = null;
   if (mazeAlgorithmClass) {
-    setSlowMazeAlgorithmRunning(true);
     emptyMaze = mazeAlgorithmClass.getMazeBase(boardSize[0], boardSize[1]);
 
     if (emptyMaze === null) {
