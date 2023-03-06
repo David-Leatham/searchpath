@@ -13,6 +13,8 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const inter = Inter({ subsets: ['latin'] })
 
 
+let searchAlgPromise: Promise<void>;
+
 export function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorithm, searchAlgorithmInfoList: SearchAlgorithmInfoList) {
   return async function () {
     // First clear the board
@@ -20,10 +22,11 @@ export function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorith
     setSearchAlgorithmStopRunning(true);
     if (getSearchAlgorithmRunning()) {
       clear(boardList);
-      await sleep(300);
+      await searchAlgPromise;
+      await sleep(100);
     }
     // Then start a new search itteration
-    startSeach(boardList, searchAlgorithm, searchAlgorithmInfoList);
+    searchAlgPromise = startSeach(boardList, searchAlgorithm, searchAlgorithmInfoList);
   }
 }
 
