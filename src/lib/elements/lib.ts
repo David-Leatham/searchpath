@@ -117,10 +117,6 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
 
   if (mazeAlgorithmClass) {
     setSlowMazeAlgorithmRunning(true);
-    console.log('running')
-
-
-
     let emptyMaze = mazeAlgorithmClass.getMazeBase(boardSize[0], boardSize[1]);
 
     if (emptyMaze === null) {
@@ -130,7 +126,6 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
           mazeAlgorithmClassEmpty = mazeAlgorithmInfo.algorithm;
         }
       }
-      console.log(mazeAlgorithmClassEmpty)
       if (mazeAlgorithmClassEmpty) {
         emptyMaze = mazeAlgorithmClassEmpty.generateMaze(boardSize[0], boardSize[1])
       }
@@ -144,9 +139,7 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
 
     let boardList = emptyMaze;
 
-
     let boardMazeChanges = mazeAlgorithmClass.getMazeChanges(boardSize[0], boardSize[1]);
-    console.log(boardMazeChanges)
     if (boardMazeChanges !== null) {
       let toalTime = 10000; // 23 seconds
       let timePerPrint = toalTime / boardMazeChanges.length;
