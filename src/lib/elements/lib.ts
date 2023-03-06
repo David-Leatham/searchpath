@@ -180,61 +180,6 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
   }
 }
 
-async function startSlowMazeGenerationSave(board: Board, searchAlgorithm: SearchAlgorithm, searchAlgorithmInfoList: SearchAlgorithmInfoList) {
-  // Get the correct algorithm
-  let searchAlgorithmInfo: null | SearchAlgorithmInfo = null;
-  for (let algoInfo of searchAlgorithmInfoList) {
-    if (algoInfo.searchAlgorithm == searchAlgorithm) {
-      searchAlgorithmInfo = algoInfo
-    }
-  }
-  if (!searchAlgorithmInfo) {return}
-
-	let startRGBColor = [221, 162, 6];
-	let endRGBColor = [243, 211, 174];
-	let searchpath: SearchPath = searchAlgorithmInfo.algorithm(board)
-  setSearchAlgorithmStopRunning(false);
-  setSearchAlgorithmRunning(true);
-  let stop = false;
-	for (let index=0; index < searchpath.searchList.length; index++) {
-    if (getSearchAlgorithmStopRunning()) {
-      setSearchAlgorithmRunning(false);
-      stop = true;
-      break
-    }
-		let elem = document.getElementsByClassName(middleStyles.middle)[0].children.item(searchpath.searchList[index]) as HTMLElement
-		if (board.boardList[searchpath.searchList[index]] == Block.Path) {
-			let r = scale(startRGBColor[0], endRGBColor[0], index / searchpath.searchList.length);
-			let g = scale(startRGBColor[1], endRGBColor[1], index / searchpath.searchList.length);
-			let b = scale(startRGBColor[2], endRGBColor[2], index / searchpath.searchList.length);
-      elem.style.transition = 'transform 300ms, background-color 300ms linear';
-			elem.style.background = 'rgb(' + r + ',' + g + ',' + b + ')';
-			elem.style.transform = 'rotate(90deg)';
-			await sleep(50)
-		}
-	}
-	for (let index of searchpath.shortestPath) {
-    if (getSearchAlgorithmStopRunning() || stop) {
-      setSearchAlgorithmRunning(false);
-      break
-    }
-		let elem = document.getElementsByClassName(middleStyles.middle)[0].children.item(index) as HTMLElement
-		if (board.boardList[index] == Block.Path) {
-			// elem.classList.add("blockShortestPath")
-      elem.style.transition = 'transform 300ms, background-color 300ms linear';
-			elem.style.background = '#D09683';
-			elem.style.transform = 'rotate(' + 0 + 'deg)';
-			await sleep(50)
-		}
-	}
-	// rotationDeg += 90;
-	// elem.style.transition = 'red 1000ms linear';
-}
-
-// function toggleSlowMazeGeneration() {
-
-// }
- 
 function scale(first: number, second: number, percent: number) {
 	let lower: number;
 	let higher: number;
