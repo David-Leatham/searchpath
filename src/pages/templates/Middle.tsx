@@ -76,11 +76,6 @@ export default function Middle() {
 
   }
 
-  // const slowMazeGenCallback = useCallback((mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList, boardSize: Array<number>, setBoardList: (board: Array<Block>) => void, boardList: Array<Block>) => {
-  //   console.log('starting')
-  //   StartSlowMazeGeneration(mazeAlgorithm, mazeAlgorithmInfoList, boardSize, setBoardList, boardList);
-  // }, []);
-
   useEffect(() => {
     if (genSlow) {
       StartSlowMazeGeneration(mazeAlgorithm, mazeAlgorithmInfoList, boardSize, setBoardList);
@@ -186,7 +181,6 @@ interface BlockDrawableDivInput {
 }
 
 function BlockDiv({block}: BlockDivProps) {
-  // console.log(key)
   let elem: JSX.Element;
   if (block == Block.Wall || Block.BoardBoundary) {
     elem = <div className={styles.checkbox + ' ' + styles.blockWall}/>
