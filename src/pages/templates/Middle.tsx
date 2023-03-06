@@ -153,20 +153,18 @@ export default function Middle() {
 }
 
 function newBoardGenAndgetBoardDivList(boardList: Array<Block>, mazeAlgorithm: MazeAlgorithm): JSX.Element[]  {
-
   setSearchAlgorithmStopRunning(true);
-  // let drawable = mazeAlgorithm == MazeAlgorithm.Empty;
-  let drawable = mazeAlgorithm == null;
+
+  let drawable = mazeAlgorithm == MazeAlgorithm.Empty;
   let divList: Array<JSX.Element> = [];
+
   for (let i = 0; i < boardList.length; i++) {
-    let key = i + Date.now();
     if (!drawable) {
       divList.push(<BlockDiv block={boardList[i]} key={i}></BlockDiv>);
     } else {
       divList.push(<BlockDrawableDiv block={boardList[i]} index={i} key={i}></BlockDrawableDiv>);
     }
   }
-
   return divList;
 }
 
