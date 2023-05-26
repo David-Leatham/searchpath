@@ -8,7 +8,7 @@ import { useStyleStore } from '@/lib/store/styleStore';
 import { Style, StyleInfoList } from '@/lib/types'
 import { conditionalStyleDict } from '@/lib/hepers'
 
-const Middle = dynamic(() => import('./templates/Middle'), {
+const Board = dynamic(() => import('./templates/Board'), {
   ssr: false
 })
 
@@ -27,7 +27,7 @@ export default function Home() {
       <main className={classNames(styles.main, conditionalStyleDict(style, styleInfoList, styles))}>
       {/* <main className={styles.main + ' ' + styles.dark}> */}
         <SettingsStrip></SettingsStrip>
-        <Middle></Middle>
+        <Board></Board>
       </main>
     </>
   )

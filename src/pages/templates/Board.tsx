@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import styles from './Middle.module.css';
+import styles from './Board.module.css';
 import { setSearchAlgorithmStopRunning, setSlowMazeAlgorithmStopRunning, 
   getSlowMazeAlgorithmStartRunning, setSlowMazeAlgorithmStartRunning } from '@/lib/store/globalVariables';
 import { useBoardListStore, useBoardSizeStore } from "@/lib/store/boardStore";
@@ -16,7 +16,7 @@ import { StartSlowMazeGeneration } from '@/lib/elements/lib'
 import ResizeObserver from 'resize-observer-polyfill';
 
 
-export default function Middle() {
+export default function Board() {
   const setBoardSize = useBoardSizeStore((state)=>{return (size: Array<number>) => {state.setHeight(size[0]); state.setWidth(size[1])}});
   const setBoardList = useBoardListStore((state)=>{return (board: Array<Block>) => {state.setBoardList(board)}});
   const boardSize: Array<number> = useBoardSizeStore<Array<number>>((state)=>[state.boardSize.height, state.boardSize.width]);

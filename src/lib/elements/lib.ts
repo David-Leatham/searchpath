@@ -1,4 +1,4 @@
-import middleStyles from '@/pages/templates/Middle.module.css'
+import middleStyles from '@/pages/templates/Board.module.css'
 import settingsStripStyles from '@/pages/templates/settings/SettingsStrip.module.css'
 
 import { Inter } from '@next/font/google'
