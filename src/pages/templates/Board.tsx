@@ -30,6 +30,8 @@ export default function Board() {
 
   const generateMazeState: boolean = useGenerateMazeStateStore<boolean>((state)=>state.generateMazeState);
 	const slowMazeState: boolean = useSlowMazeStateStore<boolean>((state)=>state.slowMazeState);
+
+  const toggleGenerateMazeState = useGenerateMazeStateStore((state)=>{return state.toggleGenerateMazeState });  
   // const generateMazeState: boolean = false;
 	// const slowMazeState: boolean = false;
 
@@ -44,6 +46,12 @@ export default function Board() {
   const slowMazeStateRef = useRef<boolean>(slowMazeState);
   useEffect(() => {
     slowMazeStateRef.current = slowMazeState
+    if (slowMazeState) {
+      toggleGenerateMazeState()
+    } else {
+      setSlowMazeAlgorithmStopRunning(true);
+      rerenderBoard(lastBoardSize.current, slowMazeStateRef);
+    }
   }, [slowMazeState])
 
   const mazeAlgorithmStateRef = useRef<MazeAlgorithm | null>(null);
@@ -51,18 +59,17 @@ export default function Board() {
 
   const [resizeBoardElement, setResizeBoardElement] = useState<null | HTMLElement>(null);
 
-  const rerenderBoard = (boardSize: Array<number>, slowMazeState: boolean) => {
-    let mazeAlgorithmTmp: null | MazeAlgorithm;
-    if (slowMazeState) {
-      return
-      // mazeAlgorithmTmp = MazeAlgorithm.Empty;
-    } else {
-      mazeAlgorithmTmp = mazeAlgorithmStateRef.current;
-    }
+  const rerenderBoard = (boardSize: Array<number>, slowMazeStateRef: React.MutableRefObject<boolean>) => {
+    // let mazeAlgorithmTmp: null | MazeAlgorithm;
+    // if (slowMazeState) {
+    //   mazeAlgorithmTmp = MazeAlgorithm.Empty;
+    // } else {
+    //   mazeAlgorithmTmp = mazeAlgorithmStateRef.current;
+    // }
       
     let mazeAlgClass: null | MazeAlgAbstract = null;
     for (let mazeAlgorithmInfo of mazeAlgorithmInfoList) {
-      if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithmTmp) {
+      if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithmStateRef.current) {
         mazeAlgClass = mazeAlgorithmInfo.algorithm;
       }
     }
@@ -70,7 +77,15 @@ export default function Board() {
     if (mazeAlgClass) {
       // lastBoardSize = boxCount
       setBoardSize(boardSize);
-      let boardElements = mazeAlgClass.generateMaze(boardSize[0], boardSize[1])
+      let boardElements: Array<Block> | null = null;
+      if (slowMazeStateRef.current) {
+        boardElements = mazeAlgClass.getMazeBase(boardSize[0], boardSize[1])
+      }
+
+      if (boardElements === null) {
+        boardElements = mazeAlgClass.generateMaze(boardSize[0], boardSize[1])
+      }
+
       setBoardList(boardElements);
     }
 
@@ -78,6 +93,7 @@ export default function Board() {
 
   useEffect(() => {
     if (genSlow) {
+      setSearchAlgorithmStopRunning(true);
       StartSlowMazeGeneration(mazeAlgorithm, mazeAlgorithmInfoList, boardSize, setBoardList);
     }
     setgenSlow(false)
@@ -92,8 +108,16 @@ export default function Board() {
     if (lastBoardSize.current[0] != boxCount[0] || lastBoardSize.current[1] != boxCount[1]) {
 
       lastBoardSize.current = boxCount
-      setSlowMazeAlgorithmStartRunning(true);
-      rerenderBoard(boxCount, slowMazeState);
+      setSearchAlgorithmStopRunning(true);
+      setSlowMazeAlgorithmStopRunning(true);
+      // setSlowMazeAlgorithmStartRunning(true);
+      
+      // if (slowMazeState) {
+      //   toggleGenerateMazeState();
+      // } else {
+      rerenderBoard(boxCount, slowMazeStateRef);
+      toggleGenerateMazeState();
+      // }
     }
   }, []);
 
@@ -112,10 +136,10 @@ export default function Board() {
       setgenSlow(true)
 
     } else {
-      rerenderBoard(boardSize, slowMazeState);
+      rerenderBoard(boardSize, slowMazeStateRef);
 
     }
-  }, [mazeAlgorithm, generateMazeState])
+  }, [mazeAlgorithm, generateMazeState, slowMazeStateRef])
 
   useEffect(() => {
       if (resizeBoardElement) {
@@ -153,20 +177,16 @@ export default function Board() {
 }
 
 function newBoardGenAndgetBoardDivList(boardList: Array<Block>, mazeAlgorithm: MazeAlgorithm): JSX.Element[]  {
-
-  setSearchAlgorithmStopRunning(true);
-  // let drawable = mazeAlgorithm == MazeAlgorithm.Empty;
-  let drawable = mazeAlgorithm == null;
+  let drawable = mazeAlgorithm == MazeAlgorithm.Empty;
   let divList: Array<JSX.Element> = [];
+
   for (let i = 0; i < boardList.length; i++) {
-    let key = i + Date.now();
     if (!drawable) {
       divList.push(<BlockDiv block={boardList[i]} key={i}></BlockDiv>);
     } else {
       divList.push(<BlockDrawableDiv block={boardList[i]} index={i} key={i}></BlockDrawableDiv>);
     }
   }
-
   return divList;
 }
 
@@ -194,6 +214,10 @@ function BlockDiv({block}: BlockDivProps) {
     elem = <div className={styles.checkbox + ' ' + styles.blockFinish}/>
   } else if (block == Block.AlgSaving) {
     elem = <div className={styles.checkbox + ' ' + styles.blockAlgSaving}/>
+  } else if (block == Block.AlgSearched) {
+    elem = <div className={styles.checkbox + ' ' + styles.blockAlgSearched}/>
+  } else if (block == Block.AlgSolutionPath) {
+    elem = <div className={styles.checkbox + ' ' + styles.blockAlgSolutionPath}/>
   } else {
     elem = <div className={styles.checkbox + ' ' + styles.blockFail}/>
   }
@@ -251,6 +275,10 @@ function BlockDrawableDiv({block, index}: BlockDrawableDivInput) {
     classname = styles.checkbox + ' ' + styles.blockFinish
   } else if (block == Block.AlgSaving) {
     classname = styles.checkbox + ' ' + styles.blockAlgSaving
+  } else if (block == Block.AlgSearched) {
+    classname = styles.checkbox + ' ' + styles.blockAlgSearched
+  } else if (block == Block.AlgSolutionPath) {
+    classname = styles.checkbox + ' ' + styles.blockAlgSolutionPath
   } else {
     classname = styles.checkbox + ' ' + styles.blockFail
   }

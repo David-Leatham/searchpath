@@ -20,7 +20,7 @@ let searchAlgorithmInfoList: MazeAlgorithmInfoList = [
     algorithm: new RecursiveBacktracking
   },
   { mazeAlgorithm: MazeAlgorithm.Empty,
-    name: 'Empty',
+    name: 'Drawable',
     algorithm: new Empty
   },
 ]

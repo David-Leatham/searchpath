@@ -17,7 +17,9 @@ export enum Block {
 	Path,
 	Start,
 	Finish,
-  AlgSaving
+  AlgSaving,
+  AlgSearched,
+  AlgSolutionPath
 }
 
 export interface Board {
