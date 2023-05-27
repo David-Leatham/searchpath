@@ -81,7 +81,6 @@ export default function Board() {
       
     let mazeAlgClass: null | MazeAlgAbstract = null;
     for (let mazeAlgorithmInfo of mazeAlgorithmInfoList) {
-      // console.log(mazeAlgorithmInfo)
       if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithmStateRef.current) {
         mazeAlgClass = mazeAlgorithmInfo.algorithm;
       }
@@ -170,7 +169,6 @@ export default function Board() {
       toggleGenerateMazeState()
       // setSearchAlgorithmStopRunning(true);
       // setSlowMazeAlgorithmStopRunning(true);
-      console.log('hi')
 
       // setSlowMazeAlgorithmStartRunning(true);
       
