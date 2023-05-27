@@ -5,8 +5,7 @@ import { Inter } from '@next/font/google'
 
 import { Block, Board, SearchAlgorithm, SearchAlgorithmInfoList, SearchAlgorithmInfo, SearchPath, MazeAlgorithm, MazeAlgorithmInfo, Style, StyleInfo, MazeAlgorithmInfoList, MazeAlgAbstract, MazeChangeBlock } from '@/lib/types'
 import { getSearchAlgorithmRunning, getSearchAlgorithmStopRunning, setSearchAlgorithmRunning, setSearchAlgorithmStopRunning,
-  getSlowMazeAlgorithmRunning, getSlowMazeAlgorithmStopRunning, setSlowMazeAlgorithmRunning, setSlowMazeAlgorithmStopRunning,
-  setSlowMazeAlgorithmStartRunning, getSlowMazeAlgorithmStartRunning
+  getSlowMazeAlgorithmRunning, setSlowMazeAlgorithmRunning
 } from '@/lib/store/globalVariables';
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -18,6 +17,8 @@ let searchAlgPromise: Promise<void>;
 export function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorithm, searchAlgorithmInfoList: SearchAlgorithmInfoList, setBoardList: (board: Array<Block>) => void, slowMazeState: boolean, mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList) {
   return async function () {
     // First clear the board
+
+    if (getSlowMazeAlgorithmRunning()) { return };
     
     setSearchAlgorithmStopRunning(true);
     if (getSearchAlgorithmRunning()) {
@@ -32,7 +33,7 @@ export function StartNewSearch(boardList: Board, searchAlgorithm: SearchAlgorith
 
 export function clear(boardList: Board, setBoardList: (board: Array<Block>) => void, slowMazeState: boolean, mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList) {
   setSearchAlgorithmStopRunning(true);
-  setSlowMazeAlgorithmStopRunning(true);
+  stopSlowMazeGeneration();
 
   if (slowMazeState) {
     setEmptyMaze(mazeAlgorithm, mazeAlgorithmInfoList, [boardList.height, boardList.width], setBoardList);
@@ -114,22 +115,48 @@ async function startSeach(board: Board, searchAlgorithm: SearchAlgorithm, search
 	// elem.style.transition = 'red 1000ms linear';
 }
 
+
+
 let algPromise: Promise<void>;
+let tmp: AbortController | null = null;
 
-export async function StartSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList, boardSize: Array<number>, setBoardList: (board: Array<Block>) => void) {
-  if (!getSlowMazeAlgorithmStartRunning()) { return }
-  setSlowMazeAlgorithmStartRunning(false);
-
-  if (getSlowMazeAlgorithmRunning()) {
-    setSlowMazeAlgorithmStopRunning(true);
-    await algPromise;
+export function stopSlowMazeGeneration() {
+  if (tmp) {
+    tmp.abort();
   }
-  setSlowMazeAlgorithmStopRunning(false);
-
-  algPromise = startSlowMazeGeneration(mazeAlgorithm, mazeAlgorithmInfoList, boardSize, setBoardList);
 }
 
-async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList, boardSize: Array<number>, setBoardList: (board: Array<Block>) => void) {
+export async function StartSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList, boardSize: Array<number>, setBoardList: (board: Array<Block>) => void) {
+  // Stop a possibly running generation
+  stopSlowMazeGeneration();
+
+  // Set up a new abortion controller. 
+  // We now dont have access to old controllers, even if something went wrong.
+  tmp = new AbortController();
+
+  try {
+    slowMazeGeneration(mazeAlgorithm, mazeAlgorithmInfoList, boardSize, setBoardList, {signal: tmp.signal});
+  } catch (e: any) {
+    // Throw only non abortion errors
+    if (e.name !== 'AbortError') {
+      throw e;
+    }
+  }
+}
+
+async function slowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeAlgorithmInfoList, boardSize: Array<number>, setBoardList: (board: Array<Block>) => void, { signal }: { signal: AbortSignal }) {
+  // Reference if we are aborting
+  let abort = false;
+
+  // Function is run on abortion (We just set abort to true).
+  const onAbort = (e: any) => {
+    abort = true;
+  };
+
+  // Now we also have to add an event listener to listen on aborts.
+  signal.addEventListener('abort', onAbort, { once: true });
+  
+  // Get an empty maze
   let [mazeAlgorithmClass, boardList] = setEmptyMaze(mazeAlgorithm, mazeAlgorithmInfoList, boardSize, setBoardList);
   if (mazeAlgorithmClass === null || boardList === null) {
     return
@@ -143,10 +170,10 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
     let timePerPrint = toalTime / boardMazeChanges.length;
 
     for (let boardMazeChangeSection of boardMazeChanges) {
-      if (getSlowMazeAlgorithmStopRunning()) { break }
+      if (abort) { break }
 
       for (let mazeChangeBlock of boardMazeChangeSection) {
-        if (getSlowMazeAlgorithmStopRunning()) { break }
+        if (abort) { break }
 
         let blockToOverwrite = boardList[mazeChangeBlock.position];
         
@@ -162,7 +189,7 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
     let boardElements = mazeAlgorithmClass.generateMaze(boardSize[0], boardSize[1]);
     
     for (let i=0; i < boardElements.length; i++) {
-      if (getSlowMazeAlgorithmStopRunning()) { break }
+      if (abort) { break }
 
       if (boardElements[i] == Block.Wall) {
         boardList[i] = Block.Wall
@@ -171,6 +198,12 @@ async function startSlowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorit
       }
     }
   }
+
+  // Cleanup
+
+  // Prevent memory leaks by removing listener
+  signal.removeEventListener('abort', onAbort);
+  // Change slow maze generation variable to "not running".
   setSlowMazeAlgorithmRunning(false);
 }
 

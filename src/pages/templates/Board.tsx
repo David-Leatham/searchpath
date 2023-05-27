@@ -3,8 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import styles from './Board.module.css';
 import  { newBoardGenAndgetBoardDivList, getBoxCount } from '@/lib/elements/boardLib'
 
-import { setSearchAlgorithmStopRunning, setSlowMazeAlgorithmStopRunning, 
-  getSlowMazeAlgorithmStartRunning, setSlowMazeAlgorithmStartRunning } from '@/lib/store/globalVariables';
+import { setSearchAlgorithmStopRunning } from '@/lib/store/globalVariables';
 import { useBoardListStore, useBoardSizeStore } from "@/lib/store/boardStore";
 import { useMazeAlgorithmsStore } from '@/lib/store/mazeAlgorithmsStore';
 import { useStyleStore } from '@/lib/store/styleStore';
@@ -14,7 +13,7 @@ import { Block, MazeAlgorithm, MazeAlgorithmInfoList, Style, StyleInfoList, Maze
 import classNames from 'classnames';
 import { conditionalStyleDict } from '@/lib/hepers';
 
-import { StartSlowMazeGeneration, clear } from '@/lib/elements/lib'
+import { StartSlowMazeGeneration, clear, stopSlowMazeGeneration } from '@/lib/elements/lib'
 
 import ResizeObserver from 'resize-observer-polyfill';
 
@@ -69,15 +68,8 @@ export default function Board() {
   //////////////////////// Rerender the board with a new maze
 
   const rerenderBoard = (boardSize: Array<number>, slowMazeStateRef: React.MutableRefObject<boolean>) => {
-    // We are working with purely references in this function, 
+    // We are working purely with references in this function, 
     // because it needs to get called by the board resize callback.
-
-    // let mazeAlgorithmTmp: null | MazeAlgorithm;
-    // if (slowMazeState) {
-    //   mazeAlgorithmTmp = MazeAlgorithm.Empty;
-    // } else {
-    //   mazeAlgorithmTmp = mazeAlgorithmStateRef.current;
-    // }
       
     let mazeAlgClass: null | MazeAlgAbstract = null;
     for (let mazeAlgorithmInfo of mazeAlgorithmInfoList) {
@@ -86,7 +78,6 @@ export default function Board() {
       }
     }
     if (mazeAlgClass) {
-      // lastBoardSize = boxCount
       setBoardSize(boardSize);
       if (resizeBoardElementRef.current) {
         // This is only updated when the board size actually changes.
@@ -105,7 +96,6 @@ export default function Board() {
 
       setBoardList(boardElements);
     }
-
   }
 
 
@@ -119,7 +109,7 @@ export default function Board() {
       // We want to generate a new maze when entering slow maze generation
       toggleGenerateMazeState()
     } else {
-      setSlowMazeAlgorithmStopRunning(true);
+      stopSlowMazeGeneration()
       rerenderBoard(lastBoardSize.current, slowMazeStateRef);
     }
   }, [slowMazeState])
@@ -130,7 +120,6 @@ export default function Board() {
   useEffect(() => {
     if (slowMazeState) {
       setSearchAlgorithmStopRunning(true);
-      setSlowMazeAlgorithmStartRunning(true);
       StartSlowMazeGeneration(mazeAlgorithm, mazeAlgorithmInfoList, boardSize, setBoardList);
     } else {
       const boardTmp: BoardType = {height: boardSize[0], width: boardSize[1], boardList: boardList}
@@ -167,17 +156,8 @@ export default function Board() {
 
       lastBoardSize.current = boxCount
       toggleGenerateMazeState()
-      // setSearchAlgorithmStopRunning(true);
-      // setSlowMazeAlgorithmStopRunning(true);
 
-      // setSlowMazeAlgorithmStartRunning(true);
-      
-      // if (slowMazeState) {
-      //   toggleGenerateMazeState();
-      // } else {
       rerenderBoard(boxCount, slowMazeStateRef);
-      // toggleGenerateMazeState();
-      // }
     }
   }, []);
 
@@ -189,14 +169,6 @@ export default function Board() {
       }
     }
   });
-
-
-  // useEffect(() => {
-  //     if (resizeBoardElement) {
-  //       // This is only updated when the board size actually changes.
-  //       resizeBoardElement.style.gridTemplateRows = 'repeat(' + boardSize[1] + ', 2fr)';
-  //     }
-  // }, [boardSize, lastBoardSize])
 
 
   //////////////////////// Set up board observer on load
@@ -217,6 +189,7 @@ export default function Board() {
       }
     };
   }, []);
+
 
   //////////////////////// JSX
 
