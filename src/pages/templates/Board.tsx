@@ -10,11 +10,11 @@ import { useMazeAlgorithmsStore } from '@/lib/store/mazeAlgorithmsStore';
 import { useStyleStore } from '@/lib/store/styleStore';
 import { useGenerateMazeStateStore } from '@/lib/store/generateMazeStateStore';
 import { useSlowMazeStateStore } from '@/lib/store/slowMazeStateStore';
-import { Block, MazeAlgorithm, MazeAlgorithmInfoList, Style, StyleInfoList, MazeAlgAbstract } from '@/lib/types';
+import { Block, MazeAlgorithm, MazeAlgorithmInfoList, Style, StyleInfoList, MazeAlgAbstract, Board as BoardType } from '@/lib/types';
 import classNames from 'classnames';
 import { conditionalStyleDict } from '@/lib/hepers';
 
-import { StartSlowMazeGeneration } from '@/lib/elements/lib'
+import { StartSlowMazeGeneration, clear } from '@/lib/elements/lib'
 
 import ResizeObserver from 'resize-observer-polyfill';
 
@@ -134,6 +134,8 @@ export default function Board() {
       setSlowMazeAlgorithmStartRunning(true);
       StartSlowMazeGeneration(mazeAlgorithm, mazeAlgorithmInfoList, boardSize, setBoardList);
     } else {
+      const boardTmp: BoardType = {height: boardSize[0], width: boardSize[1], boardList: boardList}
+      clear(boardTmp, setBoardList, slowMazeState, mazeAlgorithm, mazeAlgorithmInfoList)
       rerenderBoard(lastBoardSize.current, slowMazeStateRef);
     }
   }, [generateMazeState])
@@ -165,8 +167,10 @@ export default function Board() {
     if (lastBoardSize.current[0] != boxCount[0] || lastBoardSize.current[1] != boxCount[1]) {
 
       lastBoardSize.current = boxCount
-      setSearchAlgorithmStopRunning(true);
-      setSlowMazeAlgorithmStopRunning(true);
+      toggleGenerateMazeState()
+      // setSearchAlgorithmStopRunning(true);
+      // setSlowMazeAlgorithmStopRunning(true);
+      console.log('hi')
 
       // setSlowMazeAlgorithmStartRunning(true);
       
