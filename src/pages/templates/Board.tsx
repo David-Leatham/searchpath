@@ -49,10 +49,10 @@ export default function Board() {
   // Automatic reference to middle HTML element
   const middleRef = useRef<HTMLDivElement | null>(null);
 
-  // Needed?
+  // Needed for board size callback. But does the callback really need it?
   const slowMazeStateRef = useRef<boolean>(slowMazeState);
 
-  // Needed?
+  // Needed for board size callback. But does the callback really need it?
   const mazeAlgorithmStateRef = useRef<MazeAlgorithm | null>(mazeAlgorithm);
 
 
@@ -69,6 +69,9 @@ export default function Board() {
   //////////////////////// Rerender the board with a new maze
 
   const rerenderBoard = (boardSize: Array<number>, slowMazeStateRef: React.MutableRefObject<boolean>) => {
+    // We are working with purely references in this function, 
+    // because it needs to get called by the board resize callback.
+
     // let mazeAlgorithmTmp: null | MazeAlgorithm;
     // if (slowMazeState) {
     //   mazeAlgorithmTmp = MazeAlgorithm.Empty;
@@ -78,6 +81,7 @@ export default function Board() {
       
     let mazeAlgClass: null | MazeAlgAbstract = null;
     for (let mazeAlgorithmInfo of mazeAlgorithmInfoList) {
+      // console.log(mazeAlgorithmInfo)
       if (mazeAlgorithmInfo.mazeAlgorithm == mazeAlgorithmStateRef.current) {
         mazeAlgClass = mazeAlgorithmInfo.algorithm;
       }
@@ -109,7 +113,9 @@ export default function Board() {
   //////////////////////// Handle new maze generation state change
 
   useEffect(() => {
+    // Update reference for callback
     slowMazeStateRef.current = slowMazeState
+
     if (slowMazeState) {
       // We want to generate a new maze when entering slow maze generation
       toggleGenerateMazeState()
@@ -136,6 +142,9 @@ export default function Board() {
   //////////////////////// Rerender on maze Change
 
   useEffect(() => {
+    // Save the state into ref for board size callback
+    mazeAlgorithmStateRef.current = mazeAlgorithm
+
     if (slowMazeState) {
       // When the maze algorithm changes, we want to run a new maze generation.
       toggleGenerateMazeState()
