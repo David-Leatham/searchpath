@@ -88,7 +88,8 @@ export enum MazeAlgorithm {
   Empty,
   RecursiveDivision,
   RecursiveBacktracking,
-  RandomizedPrim
+  RandomizedPrim,
+  AldousBorder
 }
 
 export interface MazeAlgorithmInfo {

@@ -5,6 +5,7 @@ import Empty from './algorithms/empty';
 import RecursiveDivision from './algorithms/recursiveDivision';
 import RecursiveBacktracking from './algorithms/recursiveBacktracking';
 import RandomizedPrim from './algorithms/randomizedPrim';
+import AldousBorder from './algorithms/aldousBorder';
 
 
 
@@ -23,6 +24,10 @@ let searchAlgorithmInfoList: MazeAlgorithmInfoList = [
   { mazeAlgorithm: MazeAlgorithm.RandomizedPrim,
     name: 'Prim Randomized',
     algorithm: new RandomizedPrim
+  },
+  { mazeAlgorithm: MazeAlgorithm.AldousBorder,
+    name: 'Aldous Border',
+    algorithm: new AldousBorder
   },
   { mazeAlgorithm: MazeAlgorithm.Empty,
     name: 'Drawable',
