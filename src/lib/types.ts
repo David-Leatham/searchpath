@@ -87,7 +87,8 @@ export enum MazeAlgorithm {
   // Kruskal,
   Empty,
   RecursiveDivision,
-  RecursiveBacktracking
+  RecursiveBacktracking,
+  RandomizedPrim
 }
 
 export interface MazeAlgorithmInfo {
