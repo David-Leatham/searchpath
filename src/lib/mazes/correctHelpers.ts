@@ -16,7 +16,7 @@ export function innerArrayAddStartFinish(grid: Array<Array<Block>>): Array<Array
 	return grid
 }
 
-export function innerArrayToOut(width: number, height: number, grid: Array<Array<Block>>): Array<Block> {
+export function innerArrayToOut(height: number, width: number, grid: Array<Array<Block>>): Array<Block> {
 	for (let i=0; i<grid.length; i++) {
 		grid[i].unshift(Block.BoardBoundary)
 		grid[i].push(Block.BoardBoundary)

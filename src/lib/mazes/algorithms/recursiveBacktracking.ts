@@ -10,7 +10,7 @@ export default class RecursiveBacktracking extends MazeAlgAbstract {
     if (!grid) {return []}
 
     innerArrayAddStartFinish(grid);
-    return innerArrayToOut(width, height, grid);
+    return innerArrayToOut(height, width, grid);
   }
   getMazeChanges(height: number, width: number) { return this.recursiveBacktracking(height, width)[1] }
 

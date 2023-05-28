@@ -13,7 +13,7 @@ export default class RecursiveDivide extends MazeAlgAbstract {
     this.setHeightWidth(height-2, width-2);
   
     innerArrayAddStartFinish(grid);
-    return innerArrayToOut(width, height, grid)
+    return innerArrayToOut(height, width, grid)
   }
   
   getMazeChanges(height: number, width: number) { return this.recursiveDivideOut(height, width)[1] }
@@ -30,7 +30,7 @@ export default class RecursiveDivide extends MazeAlgAbstract {
   
     innerArrayAddStartFinish(grid);
 
-    let out = innerArrayToOut(width, height, grid)
+    let out = innerArrayToOut(height, width, grid)
     return [out, mazeChangeSave];
   }
 

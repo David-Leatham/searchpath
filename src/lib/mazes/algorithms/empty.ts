@@ -13,5 +13,5 @@ function empty(height: number, width: number): Array<Block> {
   if (!grid) {return []}
 
   innerArrayAddStartFinish(grid);
-  return innerArrayToOut(width, height, grid);
+  return innerArrayToOut(height, width, grid);
 }
