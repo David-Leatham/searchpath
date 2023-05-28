@@ -180,9 +180,9 @@ async function slowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInf
         if (blockToOverwrite != Block.BoardBoundary && blockToOverwrite != Block.Start && blockToOverwrite != Block.Finish) {
           boardList[mazeChangeBlock.position] = mazeChangeBlock.block
         }
-        setBoardList(boardList);
       }
-
+      
+      setBoardList(boardList);
       await sleep(timePerPrint);
     }
   } else {
