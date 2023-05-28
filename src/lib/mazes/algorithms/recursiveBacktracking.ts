@@ -1,6 +1,6 @@
 import { Block, Position, isEqual, MazeAlgAbstract, MazeChangeBlock } from '@/lib/types'
 import { getInnerPathArray, innerPathArrayAddStartFinish, innerPathArrayToOut, flatten } from '../helpers'
-import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut } from '../correctHelpers'
+import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut, neighbors   } from '../correctHelpers'
 
 
 export default class RecursiveBacktracking extends MazeAlgAbstract {
@@ -32,7 +32,7 @@ export default class RecursiveBacktracking extends MazeAlgAbstract {
   }
 
   rBImplementatoin(position: Position, visited: Array<Position>, visitedNoNeighbors: Array<Position>, mazeChanges: Array<Array<MazeChangeBlock>>, grid: Array<Array<Block>>, height: number, width: number): void {
-    let neighborsAr = neighbors(position, visited, visitedNoNeighbors, height, width);
+    let neighborsAr = neighbors(position, visited.concat(visitedNoNeighbors), height, width);
     if (!neighborsAr.length) {
       visitedNoNeighbors.push(position)
 
@@ -55,34 +55,34 @@ export default class RecursiveBacktracking extends MazeAlgAbstract {
   }
 }
 
-function neighbors(position: Position, visited: Array<Position>, visitedNoNeighbors: Array<Position>, height: number, width: number): Array<Position> {
-  let neighborsLi: Array<Position> = []
-  if (position.heightCoord > 1) {
-    neighborsLi.push({heightCoord: position.heightCoord - 2, widthCoord: position.widthCoord})
-  }
-  if (position.heightCoord < height - 2) {
-    neighborsLi.push({heightCoord: position.heightCoord + 2, widthCoord: position.widthCoord})
-  }
-  if (position.widthCoord > 1) {
-    neighborsLi.push({heightCoord: position.heightCoord, widthCoord: position.widthCoord - 2})
-  }
-  if (position.widthCoord < width - 2) {
-    neighborsLi.push({heightCoord: position.heightCoord, widthCoord: position.widthCoord + 2})
-  }
+// function neighbors(position: Position, visited: Array<Position>, visitedNoNeighbors: Array<Position>, height: number, width: number): Array<Position> {
+//   let neighborsLi: Array<Position> = []
+//   if (position.heightCoord > 1) {
+//     neighborsLi.push({heightCoord: position.heightCoord - 2, widthCoord: position.widthCoord})
+//   }
+//   if (position.heightCoord < height - 2) {
+//     neighborsLi.push({heightCoord: position.heightCoord + 2, widthCoord: position.widthCoord})
+//   }
+//   if (position.widthCoord > 1) {
+//     neighborsLi.push({heightCoord: position.heightCoord, widthCoord: position.widthCoord - 2})
+//   }
+//   if (position.widthCoord < width - 2) {
+//     neighborsLi.push({heightCoord: position.heightCoord, widthCoord: position.widthCoord + 2})
+//   }
 
-  let i=0;
-  while (i < neighborsLi.length) {
-    for (let visitedPos of visited.concat(visitedNoNeighbors)) {
-      if (isEqual(visitedPos, neighborsLi[i])) {
-        neighborsLi.splice(i, 1)
-        i -= 1
-        break
-      }
-    }
-    i += 1
-  }
-  return neighborsLi
-}
+//   let i=0;
+//   while (i < neighborsLi.length) {
+//     for (let visitedPos of visited.concat(visitedNoNeighbors)) {
+//       if (isEqual(visitedPos, neighborsLi[i])) {
+//         neighborsLi.splice(i, 1)
+//         i -= 1
+//         break
+//       }
+//     }
+//     i += 1
+//   }
+//   return neighborsLi
+// }
 
 function fillSides(grid: Array<Array<Block>>, height: number, width: number): void {
   if (width % 2 == 0) {
