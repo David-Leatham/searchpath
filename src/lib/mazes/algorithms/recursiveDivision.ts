@@ -19,7 +19,6 @@ export default class RecursiveDivide extends MazeAlgAbstract {
   getMazeChanges(height: number, width: number) { return this.recursiveDivideOut(height, width)[1] }
 
   recursiveDivideOut(height: number, width: number): [Array<Block>, Array<Array<MazeChangeBlock>>] {
-    console.log(height, width)
     let grid = getInnerArray(Block.Path, height, width);
     if (!grid) {return [[], []]}
 
