@@ -1,5 +1,5 @@
 import { Block, MazeAlgAbstract, MazeChangeBlock } from '@/lib/types'
-import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut, getRandomInt, flatten } from '../correctHelpers'
+import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut, getRandomInt, flatten } from '../helpers'
 
 // From top to bottom, from left to right the grid
 
@@ -53,8 +53,8 @@ export default class RecursiveDivide extends MazeAlgAbstract {
       let mazeSave: Array<MazeChangeBlock> = [];
       for (let i=widthLowerBound; i<widthUpperBound; i++) {
         if (i != borderHole) {
-          grid[i][borderHeight] = Block.Wall;
-          mazeSave.push({block: Block.Wall, position: flatten({heightCoord: borderHeight, widthCoord: i}, this.width, this.height)})
+          grid[borderHeight][i] = Block.Wall;
+          mazeSave.push({block: Block.Wall, position: flatten({heightCoord: borderHeight, widthCoord: i}, this.height, this.width)})
         }
       }
       mazeChangeSave.push(mazeSave);
@@ -66,8 +66,8 @@ export default class RecursiveDivide extends MazeAlgAbstract {
       let mazeSave: Array<MazeChangeBlock> = [];
       for (let i=heightLowerBound; i<heightUpperBound; i++) {
         if (i != borderHole) {
-          grid[borderWidth][i] = Block.Wall;
-          mazeSave.push({block: Block.Wall, position: flatten({heightCoord: i, widthCoord: borderWidth}, this.width, this.height)})
+          grid[i][borderWidth] = Block.Wall;
+          mazeSave.push({block: Block.Wall, position: flatten({heightCoord: i, widthCoord: borderWidth}, this.height, this.width)})
         }
       }
       mazeChangeSave.push(mazeSave);

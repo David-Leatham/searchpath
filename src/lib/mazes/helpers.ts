@@ -1,66 +1,143 @@
-import { Block, Position } from '../types'
+import { Block, Position, isEqual, MazeChangeBlock } from '../types'
 
-export function nothin() {}
+// From top to bottom, from left to right the grid
 
-// export function generateMazeFkt(mazeAlgorithm: (height: number, width: number) => Array<Block>): (board: Board) => (SearchPath)  {
-//     let retFkt: (board: Board) => (SearchPath);
-//     retFkt = (board: Board) => generatePath(board, searchAlgorithm)
-//     return  retFkt
-//   }
-
-export function getInnerPathArray(block: Block, height: number, width: number): null | Array<Array<Block>> {
-  if ((width >= 3 && height >= 4) || (width >= 4 && height >= 3)) {
-    return new Array(height-2).fill(0).map(() => new Array(width-2).fill(block))
-  }
-  return null
+export function getInnerArray(block: Block, height: number, width: number): null | Array<Array<Block>> {
+	let grid: null | Array<Array<Block>> = null
+	if ((width >= 3 && height >= 4) || (width >= 4 && height >= 3)) {
+		grid = new Array(height-2).fill(0).map(() => new Array(width-2).fill(block))
+	}
+	return grid
 }
 
-export function innerPathArrayAddStartFinish(grid: Array<Array<Block>>): Array<Array<Block>> {
-  grid[0][0] = Block.Start
-  grid[grid.length-1][grid[0].length-1] = Block.Finish
-  return grid
+export function innerArrayAddStartFinish(grid: Array<Array<Block>>): Array<Array<Block>> {
+	grid[0][0] = Block.Start
+	grid[grid.length-1][grid[0].length-1] = Block.Finish
+	return grid
 }
 
-export function innerPathArrayToOut(width: number, height: number, grid: Array<Array<Block>>): Array<Block> {
-  for (let i=0; i<grid.length; i++) {
-    grid[i].unshift(Block.BoardBoundary)
-    grid[i].push(Block.BoardBoundary)
-  }
-  grid.unshift(new Array(width).fill(Block.BoardBoundary))
-  grid.push(new Array(width).fill(Block.BoardBoundary))
+export function innerArrayToOut(height: number, width: number, grid: Array<Array<Block>>): Array<Block> {
+	for (let i=0; i<grid.length; i++) {
+		grid[i].unshift(Block.BoardBoundary)
+		grid[i].push(Block.BoardBoundary)
+	}
+	grid.unshift(new Array(width).fill(Block.BoardBoundary))
+	grid.push(new Array(width).fill(Block.BoardBoundary))
 
-  let out: Array<number> = grid.flat(1);
-  return out
+	let gridOut = grid[0].map((_, colIndex) => grid.map(row => row[colIndex]))
+	let out: Array<number> = gridOut.flat(1);
+	return out
 }
 
 
 
 export function getRandomInt(min: number, max: number, even: boolean = false, odd: boolean = false) {
-  // The maximum not and the minimum included
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  if (max - min <= 1) {
-    return min
-  }
-  // if (even || odd) {
-  //   max = Math.floor(max - min);
-  // } else
+	// The maximum not and the minimum included
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	if (max - min <= 1) {
+		return min
+	}
+	// if (even || odd) {
+	//   max = Math.floor(max - min);
+	// } else
 
-  let out = Math.floor(Math.random() * (max - min) + min)
-  if (odd) {
-    while (out % 2 == 0) {
-      out = Math.floor(Math.random() * (max - min) + min)
-    }
-  } else if (even) {
-    while (out % 2 != 0) {
-      out = Math.floor(Math.random() * (max - min) + min)
-    }
-  }
-  return out
+	let out = Math.floor(Math.random() * (max - min) + min)
+	if (odd) {
+		while (out % 2 == 0) {
+			out = Math.floor(Math.random() * (max - min) + min)
+		}
+	} else if (even) {
+		while (out % 2 != 0) {
+			out = Math.floor(Math.random() * (max - min) + min)
+		}
+	}
+	return out
 
-  // return Math.floor(Math.random() * (max - min) + min); 
+	// return Math.floor(Math.random() * (max - min) + min); 
 }
 
 export function flatten(position: Position, height: number, width: number): number {
-  return (position.widthCoord + 1) + (width + 2) * (position.heightCoord + 1)
+	return (height + 2) * (position.widthCoord + 1) +   (position.heightCoord + 1)
+  }
+
+
+
+export function neighbors(position: Position, visited: Array<Position>, height: number, width: number): Array<Position> {
+	let neighborsLi: Array<Position> = []
+	if (position.heightCoord > 1) {
+	  neighborsLi.push({heightCoord: position.heightCoord - 2, widthCoord: position.widthCoord})
+	}
+	if (position.heightCoord < height - 2) {
+	  neighborsLi.push({heightCoord: position.heightCoord + 2, widthCoord: position.widthCoord})
+	}
+	if (position.widthCoord > 1) {
+	  neighborsLi.push({heightCoord: position.heightCoord, widthCoord: position.widthCoord - 2})
+	}
+	if (position.widthCoord < width - 2) {
+	  neighborsLi.push({heightCoord: position.heightCoord, widthCoord: position.widthCoord + 2})
+	}
+  
+	let i=0;
+	while (i < neighborsLi.length) {
+	  for (let visitedPos of visited) {
+		if (isEqual(visitedPos, neighborsLi[i])) {
+		  neighborsLi.splice(i, 1)
+		  i -= 1
+		  break
+		}
+	  }
+	  i += 1
+	}
+	return neighborsLi
 }
+
+export function visitedNeighbors(position: Position, visited: Array<Position>, height: number, width: number): Array<Position> {
+	let neighborsLi: Array<Position> = []
+	if (position.heightCoord > 1) {
+	  neighborsLi.push({heightCoord: position.heightCoord - 2, widthCoord: position.widthCoord})
+	}
+	if (position.heightCoord < height - 2) {
+	  neighborsLi.push({heightCoord: position.heightCoord + 2, widthCoord: position.widthCoord})
+	}
+	if (position.widthCoord > 1) {
+	  neighborsLi.push({heightCoord: position.heightCoord, widthCoord: position.widthCoord - 2})
+	}
+	if (position.widthCoord < width - 2) {
+	  neighborsLi.push({heightCoord: position.heightCoord, widthCoord: position.widthCoord + 2})
+	}
+
+  let outNeighborsLi: Array<Position> = []
+	let i=0;
+	while (i < neighborsLi.length) {
+	  for (let visitedPos of visited) {
+			if (isEqual(visitedPos, neighborsLi[i])) {
+				outNeighborsLi.push(visitedPos)
+			}
+	  }
+	  i += 1
+	}
+	return outNeighborsLi
+}
+
+export function fillSides(grid: Array<Array<Block>>, mazeChangeSave: Array<Array<MazeChangeBlock>>, height: number, width: number): void {
+	let mazeChanges: Array<MazeChangeBlock> = [];
+  
+	if (width % 2 == 0) {
+	  let fillPosition = 0
+	  while (fillPosition < height) {
+		grid[fillPosition][width-1] = Block.Path
+		mazeChanges.push({block: Block.Path, position: flatten({heightCoord: fillPosition, widthCoord: width-1}, height, width)});
+		fillPosition += 2
+	  }
+	}
+	if (height % 2 == 0) {
+	  let fillPosition = 0
+	  while (fillPosition < width) {
+		grid[height-1][fillPosition] = Block.Path
+		mazeChanges.push({block: Block.Path, position: flatten({heightCoord: height-1, widthCoord: fillPosition}, height, width)});
+		fillPosition += 2
+	  }
+	}
+	mazeChangeSave.push(mazeChanges);
+  }

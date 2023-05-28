@@ -1,5 +1,5 @@
 import { Block, MazeAlgAbstract, MazeChangeBlock, Position } from '@/lib/types'
-import { getInnerArrayCorrect, innerArrayAddStartFinish, innerArrayToOutCorrect, getRandomInt, flatten, flattenCorrect, neighbors, visitedNeighbors } from '../correctHelpers'
+import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut, flatten, neighbors, visitedNeighbors, fillSides } from '../helpers'
 
 // From top to bottom, from left to right the grid
 
@@ -7,19 +7,19 @@ export default class RandomizedPrim extends MazeAlgAbstract {
   generateMaze(height: number, width: number) { return this.randomizedPrimOut(height, width)[0] }
 
   getMazeBase(height: number, width: number) {
-    let grid = getInnerArrayCorrect(Block.Wall, height, width);
+    let grid = getInnerArray(Block.Wall, height, width);
     if (!grid) {return []}
 
     this.setHeightWidth(height-2, width-2);
   
     innerArrayAddStartFinish(grid);
-    return innerArrayToOutCorrect(height, width, grid)
+    return innerArrayToOut(height, width, grid)
   }
   
   getMazeChanges(height: number, width: number) { return this.randomizedPrimOut(height, width)[1] }
 
   randomizedPrimOut(height: number, width: number): [Array<Block>, Array<Array<MazeChangeBlock>>] {
-    let grid = getInnerArrayCorrect(Block.Wall, height, width);
+    let grid = getInnerArray(Block.Wall, height, width);
     if (!grid) {return [[], []]}
 
     this.setHeightWidth(height-2, width-2);
@@ -31,7 +31,7 @@ export default class RandomizedPrim extends MazeAlgAbstract {
     innerArrayAddStartFinish(grid);
 
 
-    let out = innerArrayToOutCorrect(height, width, grid)
+    let out = innerArrayToOut(height, width, grid)
     return [out, mazeChangeSave];
   }
 
@@ -48,7 +48,7 @@ export default class RandomizedPrim extends MazeAlgAbstract {
     grid[firstPosition.heightCoord][firstPosition.widthCoord] = Block.Path;
     paths.push(firstPosition);
 
-    mazeChangeSave.push([{block: Block.Path, position: flattenCorrect(firstPosition, this.height, this.width)}])
+    mazeChangeSave.push([{block: Block.Path, position: flatten(firstPosition, this.height, this.width)}])
     
     let mazeChanges: Array<MazeChangeBlock> = [];
     let neighborsTmp = neighbors(firstPosition, paths.concat(walls), height, width);
@@ -56,7 +56,7 @@ export default class RandomizedPrim extends MazeAlgAbstract {
 
     for (let position of neighborsTmp) {
       walls.push(position)
-      mazeChanges.push({block: Block.AlgSaving, position: flattenCorrect(position, this.height, this.width)})
+      mazeChanges.push({block: Block.AlgSaving, position: flatten(position, this.height, this.width)})
     }
     mazeChangeSave.push(mazeChanges)
 
@@ -78,7 +78,7 @@ export default class RandomizedPrim extends MazeAlgAbstract {
       mazeChanges = [];
       for (let position of neighbors(newPosition, paths.concat(walls), height, width)) {
         walls.push(position)
-        mazeChanges.push({block: Block.AlgSaving, position: flattenCorrect(position, this.height, this.width)})
+        mazeChanges.push({block: Block.AlgSaving, position: flatten(position, this.height, this.width)})
       }
       mazeChangeSave.push(mazeChanges)
     }
@@ -97,40 +97,20 @@ export default class RandomizedPrim extends MazeAlgAbstract {
 
 
 
-function fillSides(grid: Array<Array<Block>>, mazeChangeSave: Array<Array<MazeChangeBlock>>, height: number, width: number): void {
-  let mazeChanges: Array<MazeChangeBlock> = [];
 
-  if (width % 2 == 0) {
-    let fillPosition = 0
-    while (fillPosition < height) {
-      grid[fillPosition][width-1] = Block.Path
-      mazeChanges.push({block: Block.Path, position: flattenCorrect({heightCoord: fillPosition, widthCoord: width-1}, height, width)});
-      fillPosition += 2
-    }
-  }
-  if (height % 2 == 0) {
-    let fillPosition = 0
-    while (fillPosition < width) {
-      grid[height-1][fillPosition] = Block.Path
-      mazeChanges.push({block: Block.Path, position: flattenCorrect({heightCoord: height-1, widthCoord: fillPosition}, height, width)});
-      fillPosition += 2
-    }
-  }
-  mazeChangeSave.push(mazeChanges);
-}
 
 function walkToPosition(currPos: Position, nextPos: Position, mazeChanges: Array<Array<MazeChangeBlock>>, grid: Array<Array<Block>>, height: number, width: number, paths: Array<Position>) {
   if (currPos.heightCoord != nextPos.heightCoord) {
     if (currPos.heightCoord > nextPos.heightCoord) {
       for (let pos = currPos.heightCoord - 1; pos >= nextPos.heightCoord; pos--) {
         grid[pos][currPos.widthCoord] = Block.Path
-        mazeChanges.push([{block: Block.Path, position: flattenCorrect({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)}])
+        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)}])
         paths.push({heightCoord: pos, widthCoord: currPos.widthCoord})
       }
     } else {
       for (let pos = currPos.heightCoord + 1; pos <= nextPos.heightCoord; pos++) {
         grid[pos][currPos.widthCoord] = Block.Path
-        mazeChanges.push([{block: Block.Path, position: flattenCorrect({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)}])
+        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)}])
         paths.push({heightCoord: pos, widthCoord: currPos.widthCoord})
       }
     }
@@ -138,13 +118,13 @@ function walkToPosition(currPos: Position, nextPos: Position, mazeChanges: Array
     if (currPos.widthCoord > nextPos.widthCoord) {
       for (let pos = currPos.widthCoord - 1; pos >= nextPos.widthCoord; pos--) {
         grid[currPos.heightCoord][pos] = Block.Path
-        mazeChanges.push([{block: Block.Path, position: flattenCorrect({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)}])
+        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)}])
         paths.push({heightCoord: currPos.heightCoord, widthCoord: pos})
       }
     } else {
       for (let pos = currPos.widthCoord + 1; pos <= nextPos.widthCoord; pos++) {
         grid[currPos.heightCoord][pos] = Block.Path
-        mazeChanges.push([{block: Block.Path, position: flattenCorrect({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)}])
+        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)}])
         paths.push({heightCoord: currPos.heightCoord, widthCoord: pos})
       }
     }

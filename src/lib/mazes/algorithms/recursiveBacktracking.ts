@@ -1,6 +1,5 @@
-import { Block, Position, isEqual, MazeAlgAbstract, MazeChangeBlock } from '@/lib/types'
-import { getInnerPathArray, innerPathArrayAddStartFinish, innerPathArrayToOut, flatten } from '../helpers'
-import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut, neighbors   } from '../correctHelpers'
+import { Block, Position, MazeAlgAbstract, MazeChangeBlock } from '@/lib/types'
+import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut, neighbors, flatten, fillSides   } from '../helpers'
 
 
 export default class RecursiveBacktracking extends MazeAlgAbstract {
@@ -15,20 +14,19 @@ export default class RecursiveBacktracking extends MazeAlgAbstract {
   getMazeChanges(height: number, width: number) { return this.recursiveBacktracking(height, width)[1] }
 
   recursiveBacktracking(height: number, width: number): [Array<Block>, Array<Array<MazeChangeBlock>>] {
-    let heightSave = height
-    height = width
-    width = heightSave
 
-    let grid = getInnerPathArray(Block.Wall, height, width);
+    let grid = getInnerArray(Block.Wall, height, width);
     if (!grid) {return [[], []]}
   
     let mazeChanges: Array<Array<MazeChangeBlock>> = []
     this.rBImplementatoin({heightCoord:0, widthCoord:0}, [], [], mazeChanges, grid, height-2, width-2);
   
-    fillSides(grid, height-2, width-2)
+    fillSides(grid, mazeChanges, height-2, width-2)
   
-    innerPathArrayAddStartFinish(grid);
-    return [innerPathArrayToOut(width, height, grid), mazeChanges];
+    innerArrayAddStartFinish(grid);
+
+    let out = innerArrayToOut(height, width, grid);
+    return [out, mazeChanges];
   }
 
   rBImplementatoin(position: Position, visited: Array<Position>, visitedNoNeighbors: Array<Position>, mazeChanges: Array<Array<MazeChangeBlock>>, grid: Array<Array<Block>>, height: number, width: number): void {
@@ -84,22 +82,22 @@ export default class RecursiveBacktracking extends MazeAlgAbstract {
 //   return neighborsLi
 // }
 
-function fillSides(grid: Array<Array<Block>>, height: number, width: number): void {
-  if (width % 2 == 0) {
-    let fillPosition = 0
-    while (fillPosition < height) {
-      grid[fillPosition][width-1] = Block.Path
-      fillPosition += 2
-    }
-  }
-  if (height % 2 == 0) {
-    let fillPosition = 0
-    while (fillPosition < width) {
-      grid[height-1][fillPosition] = Block.Path
-      fillPosition += 2
-    }
-  }
-}
+// function fillSides(grid: Array<Array<Block>>, height: number, width: number): void {
+//   if (width % 2 == 0) {
+//     let fillPosition = 0
+//     while (fillPosition < height) {
+//       grid[fillPosition][width-1] = Block.Path
+//       fillPosition += 2
+//     }
+//   }
+//   if (height % 2 == 0) {
+//     let fillPosition = 0
+//     while (fillPosition < width) {
+//       grid[height-1][fillPosition] = Block.Path
+//       fillPosition += 2
+//     }
+//   }
+// }
 
 function walkToPosition(currPos: Position, nextPos: Position, mazeChanges: Array<Array<MazeChangeBlock>>, grid: Array<Array<Block>>, height: number, width: number) {
   if (currPos.heightCoord != nextPos.heightCoord) {

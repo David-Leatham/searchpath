@@ -1,5 +1,5 @@
 import { Block, MazeAlgAbstract } from '@/lib/types'
-import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut} from '../correctHelpers'
+import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut} from '../helpers'
 
 
 export default class Empty extends MazeAlgAbstract {
