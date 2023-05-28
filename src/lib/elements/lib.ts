@@ -164,7 +164,7 @@ async function slowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInf
 
   setSlowMazeAlgorithmRunning(true);
 
-  let boardMazeChanges = mazeAlgorithmClass.getMazeChanges(boardSize[0], boardSize[1]);
+  let boardMazeChanges = mazeAlgorithmClass.getMazeChanges(boardSize[1], boardSize[0]);
   if (boardMazeChanges !== null) {
     let toalTime = 13000 + 20 * boardMazeChanges.length; // 13 seconds + 0.02 seconds for every print
     let timePerPrint = toalTime / boardMazeChanges.length;
@@ -186,7 +186,7 @@ async function slowMazeGeneration(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInf
       await sleep(timePerPrint);
     }
   } else {
-    let boardElements = mazeAlgorithmClass.generateMaze(boardSize[0], boardSize[1]);
+    let boardElements = mazeAlgorithmClass.generateMaze(boardSize[1], boardSize[0]);
     
     for (let i=0; i < boardElements.length; i++) {
       if (abort) { break }
@@ -217,7 +217,7 @@ function setEmptyMaze(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeA
 
   let emptyMaze: null | Array<Block> = null;
   if (mazeAlgorithmClass) {
-    emptyMaze = mazeAlgorithmClass.getMazeBase(boardSize[0], boardSize[1]);
+    emptyMaze = mazeAlgorithmClass.getMazeBase(boardSize[1], boardSize[0]);
 
     if (emptyMaze === null) {
       let mazeAlgorithmClassEmpty: null | MazeAlgAbstract = null;
@@ -227,7 +227,7 @@ function setEmptyMaze(mazeAlgorithm: MazeAlgorithm, mazeAlgorithmInfoList: MazeA
         }
       }
       if (mazeAlgorithmClassEmpty) {
-        emptyMaze = mazeAlgorithmClassEmpty.generateMaze(boardSize[0], boardSize[1])
+        emptyMaze = mazeAlgorithmClassEmpty.generateMaze(boardSize[1], boardSize[0])
       }
     }
 

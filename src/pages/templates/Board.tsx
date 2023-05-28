@@ -87,11 +87,11 @@ export default function Board() {
       let boardElements: Array<Block> | null = null;
 
       if (slowMazeStateRef.current) {
-        boardElements = mazeAlgClass.getMazeBase(boardSize[0], boardSize[1])
+        boardElements = mazeAlgClass.getMazeBase(boardSize[1], boardSize[0])
       }
 
       if (boardElements === null) {
-        boardElements = mazeAlgClass.generateMaze(boardSize[0], boardSize[1])
+        boardElements = mazeAlgClass.generateMaze(boardSize[1], boardSize[0])
       }
 
       setBoardList(boardElements);

@@ -1,5 +1,5 @@
 import { Block, MazeAlgAbstract } from '@/lib/types'
-import { getInnerPathArray, innerPathArrayAddStartFinish, innerPathArrayToOut} from '../helpers'
+import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut} from '../correctHelpers'
 
 
 export default class Empty extends MazeAlgAbstract {
@@ -9,9 +9,9 @@ export default class Empty extends MazeAlgAbstract {
 }
 
 function empty(height: number, width: number): Array<Block> {
-  let grid = getInnerPathArray(Block.Path, height, width);
+  let grid = getInnerArray(Block.Path, height, width);
   if (!grid) {return []}
 
-  innerPathArrayAddStartFinish(grid);
-  return innerPathArrayToOut(width, height, grid);
+  innerArrayAddStartFinish(grid);
+  return innerArrayToOut(width, height, grid);
 }

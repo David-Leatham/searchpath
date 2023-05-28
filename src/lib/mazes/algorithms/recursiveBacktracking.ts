@@ -1,19 +1,24 @@
 import { Block, Position, isEqual, MazeAlgAbstract, MazeChangeBlock } from '@/lib/types'
 import { getInnerPathArray, innerPathArrayAddStartFinish, innerPathArrayToOut, flatten } from '../helpers'
+import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut } from '../correctHelpers'
 
 
 export default class RecursiveBacktracking extends MazeAlgAbstract {
   generateMaze(height: number, width: number) { return this.recursiveBacktracking(height, width)[0] }
   getMazeBase(height: number, width: number) {
-    let grid = getInnerPathArray(Block.Wall, height, width);
+    let grid = getInnerArray(Block.Wall, height, width);
     if (!grid) {return []}
 
-    innerPathArrayAddStartFinish(grid);
-    return innerPathArrayToOut(width, height, grid);
+    innerArrayAddStartFinish(grid);
+    return innerArrayToOut(width, height, grid);
   }
   getMazeChanges(height: number, width: number) { return this.recursiveBacktracking(height, width)[1] }
 
   recursiveBacktracking(height: number, width: number): [Array<Block>, Array<Array<MazeChangeBlock>>] {
+    let heightSave = height
+    height = width
+    width = heightSave
+
     let grid = getInnerPathArray(Block.Wall, height, width);
     if (!grid) {return [[], []]}
   

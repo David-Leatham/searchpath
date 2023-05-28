@@ -1,46 +1,26 @@
-import { Block, MazeAlgAbstract, MazeChangeBlock, Position } from '@/lib/types'
-import { getInnerPathArray, innerPathArrayAddStartFinish, innerPathArrayToOut, getRandomInt } from '../helpers'
+import { Block, MazeAlgAbstract, MazeChangeBlock } from '@/lib/types'
+import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut, getRandomInt, flatten } from '../correctHelpers'
 
 // From top to bottom, from left to right the grid
 
 export default class RecursiveDivide extends MazeAlgAbstract {
   generateMaze(height: number, width: number) { return this.recursiveDivideOut(height, width)[0] }
-  getMazeBase(width: number, height: number) {
-    // let grid = getInnerPathArray(Block.Path, height, width);
-    let grid: null | Array<Array<Block>> = null
-    if ((width >= 3 && height >= 4) || (width >= 4 && height >= 3)) {
-      grid = new Array(width-2).fill(0).map(() => new Array(height-2).fill(Block.Path))
-    }
+
+  getMazeBase(height: number, width: number) {
+    let grid = getInnerArray(Block.Path, height, width);
     if (!grid) {return []}
 
     this.setHeightWidth(height-2, width-2);
   
-    // let mazeChangeSave: Array<Array<MazeChangeBlock>> = [];
-    // this.recursiveDivide(grid, mazeChangeSave, 0, height-2, 0, width-2)
-  
-    // innerPathArrayAddStartFinish(grid);
-    grid[0][0] = Block.Start;
-    grid[grid.length-1][grid[0].length-1] = Block.Finish
-
-    // let out = innerPathArrayToOut(width, height, grid)
-    
-    for (let i=0; i<grid.length; i++) {
-      grid[i].unshift(Block.BoardBoundary)
-      grid[i].push(Block.BoardBoundary)
-    }
-    grid.unshift(new Array(height).fill(Block.BoardBoundary))
-    grid.push(new Array(height).fill(Block.BoardBoundary))
-
-    return grid.flat(1);
+    innerArrayAddStartFinish(grid);
+    return innerArrayToOut(width, height, grid)
   }
+  
   getMazeChanges(height: number, width: number) { return this.recursiveDivideOut(height, width)[1] }
 
-  recursiveDivideOut(width: number, height: number): [Array<Block>, Array<Array<MazeChangeBlock>>] {
-    // let grid = getInnerPathArray(Block.Path, height, width);
-    let grid: null | Array<Array<Block>> = null
-    if ((width >= 3 && height >= 4) || (width >= 4 && height >= 3)) {
-      grid = new Array(width-2).fill(0).map(() => new Array(height-2).fill(Block.Path))
-    }
+  recursiveDivideOut(height: number, width: number): [Array<Block>, Array<Array<MazeChangeBlock>>] {
+    console.log(height, width)
+    let grid = getInnerArray(Block.Path, height, width);
     if (!grid) {return [[], []]}
 
     this.setHeightWidth(height-2, width-2);
@@ -48,20 +28,9 @@ export default class RecursiveDivide extends MazeAlgAbstract {
     let mazeChangeSave: Array<Array<MazeChangeBlock>> = [];
     this.recursiveDivide(grid, mazeChangeSave, 0, height-2, 0, width-2)
   
-    // innerPathArrayAddStartFinish(grid);
-    grid[0][0] = Block.Start;
-    grid[grid.length-1][grid[0].length-1] = Block.Finish
+    innerArrayAddStartFinish(grid);
 
-    // let out = innerPathArrayToOut(width, height, grid)
-    
-    for (let i=0; i<grid.length; i++) {
-      grid[i].unshift(Block.BoardBoundary)
-      grid[i].push(Block.BoardBoundary)
-    }
-    grid.unshift(new Array(height).fill(Block.BoardBoundary))
-    grid.push(new Array(height).fill(Block.BoardBoundary))
-
-    let out: Array<number> = grid.flat(1);
+    let out = innerArrayToOut(width, height, grid)
     return [out, mazeChangeSave];
   }
 
@@ -107,9 +76,4 @@ export default class RecursiveDivide extends MazeAlgAbstract {
       this.recursiveDivide(grid, mazeChangeSave, heightLowerBound, heightUpperBound, borderWidth+1, widthUpperBound);
     }
   }
-}
-
-
-export function flatten(position: Position, height: number, width: number): number {
-  return (width + 2) * (position.widthCoord + 1) +   (position.heightCoord + 1)
 }
