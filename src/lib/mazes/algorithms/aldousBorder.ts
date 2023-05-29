@@ -1,10 +1,10 @@
-import { Block, MazeAlgAbstract, MazeChangeBlock, Position } from '@/lib/types'
+import { Block, MazeAlgAbstract, MazeChangeBlock, Position, isEqual } from '@/lib/types'
 import { getInnerArray, innerArrayAddStartFinish, innerArrayToOut, flatten, neighbors, visitedNeighbors, fillSides } from '../helpers'
 
 // From top to bottom, from left to right the grid
 
 export default class AldousBorder extends MazeAlgAbstract {
-  generateMaze(height: number, width: number) { return this.randomizedPrimOut(height, width)[0] }
+  generateMaze(height: number, width: number) { return this.aldousBorderOut(height, width)[0] }
 
   getMazeBase(height: number, width: number) {
     let grid = getInnerArray(Block.Wall, height, width);
@@ -16,16 +16,16 @@ export default class AldousBorder extends MazeAlgAbstract {
     return innerArrayToOut(height, width, grid)
   }
   
-  getMazeChanges(height: number, width: number) { return this.randomizedPrimOut(height, width)[1] }
+  getMazeChanges(height: number, width: number) { return this.aldousBorderOut(height, width)[1] }
 
-  randomizedPrimOut(height: number, width: number): [Array<Block>, Array<Array<MazeChangeBlock>>] {
+  aldousBorderOut(height: number, width: number): [Array<Block>, Array<Array<MazeChangeBlock>>] {
     let grid = getInnerArray(Block.Wall, height, width);
     if (!grid) {return [[], []]}
 
     this.setHeightWidth(height-2, width-2);
   
     let mazeChangeSave: Array<Array<MazeChangeBlock>> = [];
-    this.randomizedPrim(grid, mazeChangeSave, height-2, width-2)
+    this.aldousBorder(grid, mazeChangeSave, height-2, width-2)
 
   
     innerArrayAddStartFinish(grid);
@@ -35,98 +35,103 @@ export default class AldousBorder extends MazeAlgAbstract {
     return [out, mazeChangeSave];
   }
 
-  randomizedPrim(grid: Array<Array<Block>>, mazeChangeSave: Array<Array<MazeChangeBlock>>, height: number, width: number) {
+  
+  aldousBorder(grid: Array<Array<Block>>, mazeChangeSave: Array<Array<MazeChangeBlock>>, height: number, width: number) {
     if (!(height >= 2 && width >= 2 && height + width >= 5)) {
       return
     }
+		
+    let positions: Array<Position> = [];
 
-    let paths: Array<Position> = [];
-    let walls: Array<Position> = [];
-
-    let firstPosition: Position = this.getRandomFirstPosition(height, width);
+    let firstPosition: Position = getRandomFirstPosition(height, width);
     
     grid[firstPosition.heightCoord][firstPosition.widthCoord] = Block.Path;
-    paths.push(firstPosition);
+    positions.push(firstPosition);
+    mazeChangeSave.push([{block: Block.AlgSaving, position: flatten(firstPosition, this.height, this.width)}])
 
-    mazeChangeSave.push([{block: Block.Path, position: flatten(firstPosition, this.height, this.width)}])
-    
-    let mazeChanges: Array<MazeChangeBlock> = [];
-    let neighborsTmp = neighbors(firstPosition, paths.concat(walls), height, width);
-    // console.log(neighborsTmp)
+		let neighborsTmp: Array<Position> = [];
+		let currPos = firstPosition;
+		let nextPos = firstPosition;
 
-    for (let position of neighborsTmp) {
-      walls.push(position)
-      mazeChanges.push({block: Block.AlgSaving, position: flatten(position, this.height, this.width)})
-    }
-    mazeChangeSave.push(mazeChanges)
+		let positionCount: Array<number> = [1, Math.ceil(height / 2) * Math.ceil(width / 2)]
 
-    let newPosition = firstPosition;
-    let oldPosition = firstPosition;
+		while (positionCount[0] != positionCount[1]) {
+			currPos = nextPos;
+			neighborsTmp = neighbors(currPos, [], height, width);
+			nextPos = neighborsTmp.splice(Math.floor(Math.random()*neighborsTmp.length), 1)[0];
 
-    // for (let i=0; i < 1000; i++) {
-    //   if (walls.length === 0) { break };
-    //   console.log(i);
-    while (walls.length > 0) {
-      newPosition = walls.splice(Math.floor(Math.random()*walls.length), 1)[0];
-      let oldPositionLi = visitedNeighbors(newPosition, paths, height, width);
-      oldPosition = oldPositionLi.splice(Math.floor(Math.random()*oldPositionLi.length), 1)[0];
-  
-      // mazeChanges.push({block: Block.Wall, position: flattenCorrect(newPosition, this.height, this.width)})
-  
-      walkToPosition(oldPosition, newPosition, mazeChangeSave, grid, height, width, paths)
-  
-      mazeChanges = [];
-      for (let position of neighbors(newPosition, paths.concat(walls), height, width)) {
-        walls.push(position)
-        mazeChanges.push({block: Block.AlgSaving, position: flatten(position, this.height, this.width)})
-      }
-      mazeChangeSave.push(mazeChanges)
-    }
-    
-    fillSides(grid, mazeChangeSave, height, width);
-  }
+			walkToPosition(currPos, nextPos, mazeChangeSave, grid, height, width, positions, positionCount);
+		}
 
-  getRandomFirstPosition(height: number, width: number): Position {
-    // Needs to be a even height and width
-    let heightRange = Math.floor(height / 2);
-    let widthRange  = Math.floor(width / 2);
+		mazeChangeSave.push([{block: Block.Path, position: flatten(nextPos, this.height, this.width)}]);
 
-    return { heightCoord: Math.floor(Math.random() * heightRange) * 2, widthCoord: Math.floor(Math.random() * widthRange) * 2}
-  }
+		fillSides(grid, mazeChangeSave, height, width);
+	}
 }
 
 
 
+function getRandomFirstPosition(height: number, width: number): Position {
+	// Needs to be a even height and width
+	let heightRange = Math.floor(height / 2);
+	let widthRange  = Math.floor(width / 2);
+
+	return { heightCoord: Math.floor(Math.random() * heightRange) * 2, widthCoord: Math.floor(Math.random() * widthRange) * 2}
+}
 
 
-function walkToPosition(currPos: Position, nextPos: Position, mazeChanges: Array<Array<MazeChangeBlock>>, grid: Array<Array<Block>>, height: number, width: number, paths: Array<Position>) {
-  if (currPos.heightCoord != nextPos.heightCoord) {
-    if (currPos.heightCoord > nextPos.heightCoord) {
-      for (let pos = currPos.heightCoord - 1; pos >= nextPos.heightCoord; pos--) {
-        grid[pos][currPos.widthCoord] = Block.Path
-        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)}])
-        paths.push({heightCoord: pos, widthCoord: currPos.widthCoord})
-      }
-    } else {
-      for (let pos = currPos.heightCoord + 1; pos <= nextPos.heightCoord; pos++) {
-        grid[pos][currPos.widthCoord] = Block.Path
-        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)}])
-        paths.push({heightCoord: pos, widthCoord: currPos.widthCoord})
-      }
-    }
-  } else if (currPos.widthCoord != nextPos.widthCoord) {
-    if (currPos.widthCoord > nextPos.widthCoord) {
-      for (let pos = currPos.widthCoord - 1; pos >= nextPos.widthCoord; pos--) {
-        grid[currPos.heightCoord][pos] = Block.Path
-        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)}])
-        paths.push({heightCoord: currPos.heightCoord, widthCoord: pos})
-      }
-    } else {
-      for (let pos = currPos.widthCoord + 1; pos <= nextPos.widthCoord; pos++) {
-        grid[currPos.heightCoord][pos] = Block.Path
-        mazeChanges.push([{block: Block.Path, position: flatten({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)}])
-        paths.push({heightCoord: currPos.heightCoord, widthCoord: pos})
-      }
-    }
-  }
+function walkToPosition(currPos: Position, nextPos: Position, mazeChanges: Array<Array<MazeChangeBlock>>, grid: Array<Array<Block>>, height: number, width: number, positions: Array<Position>, positionCount: Array<number>) {
+	let mazeChangesLi: Array<MazeChangeBlock> = [];
+
+	mazeChangesLi.push({block: Block.Path, position: flatten(currPos, height, width)})
+	mazeChangesLi.push({block: Block.AlgSaving, position: flatten(nextPos, height, width)})
+
+	if (!elementInArray(nextPos, positions)) {
+		positions.push(nextPos);
+		positionCount[0] += 1;
+
+		if (currPos.heightCoord != nextPos.heightCoord) {
+			if (currPos.heightCoord > nextPos.heightCoord) {
+				for (let pos = currPos.heightCoord - 1; pos >= nextPos.heightCoord; pos--) {
+					grid[pos][currPos.widthCoord] = Block.Path
+					if (pos != nextPos.heightCoord) {
+						mazeChangesLi.push({block: Block.Path, position: flatten({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)})
+					}
+				}
+			} else {
+				for (let pos = currPos.heightCoord + 1; pos <= nextPos.heightCoord; pos++) {
+					grid[pos][currPos.widthCoord] = Block.Path
+					if (pos != nextPos.heightCoord) {
+						mazeChangesLi.push({block: Block.Path, position: flatten({heightCoord: pos, widthCoord: currPos.widthCoord}, height, width)})
+					}
+				}
+			}
+		} else if (currPos.widthCoord != nextPos.widthCoord) {
+			if (currPos.widthCoord > nextPos.widthCoord) {
+				for (let pos = currPos.widthCoord - 1; pos >= nextPos.widthCoord; pos--) {
+					grid[currPos.heightCoord][pos] = Block.Path
+					if (pos != nextPos.widthCoord) {
+						mazeChangesLi.push({block: Block.Path, position: flatten({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)})
+					}
+				}
+			} else {
+				for (let pos = currPos.widthCoord + 1; pos <= nextPos.widthCoord; pos++) {
+					grid[currPos.heightCoord][pos] = Block.Path
+					if (pos != nextPos.widthCoord) {
+						mazeChangesLi.push({block: Block.Path, position: flatten({heightCoord: currPos.heightCoord, widthCoord: pos}, height, width)})
+					}
+				}
+			}
+		}
+	}
+	mazeChanges.push(mazeChangesLi)
+}
+
+function elementInArray(element: Position, array: Array<Position>): boolean {
+	for (let arElem of array) {
+		if (isEqual(arElem, element)) {
+			return true
+		}
+	}
+	return false
 }
